@@ -3,18 +3,44 @@
 
 #include "gfc_text.h"
 #include "gfc_vector.h"
+#include "gfc_shape.h"
 #include "gf2d_sprite.h"
 
-typedef struct Entity_S {
-	GFC_TextLine	name; /**<name of the entity for debuggin>*/
-	Sprite			*sprite;/**<Graphical represenations*/
-	float			frame;/**<for drawing*/
-	GFC_Vector2D	position;/**<where to draw*/
-	GFC_Vector2D	velocity;/**<how are we moving*/
-	GFC_Vector2D	acceleration;/**/
-	GFC_Vector2D	gravity;/*keepiing seperate from acceleration just in case I need both*/
+typedef enum 
+{
+	ETT_none,
+	ETT_player,
+	ETT_enemy,
+	ETT_item,
+	ETT_world_object,
+	ETT_MAX
+}EntityTeamType;
 
-	Uint8	inuse;// can make variables private 
+typedef enum
+{
+	ECL_noLayer =1,
+	ECL_worldLayer = 2,
+	ECL_entityLayer = 4,
+	ECL_itemLayer = 8,
+	ECL_MAXLayer = 15
+}EntityCollisionLayers;
+
+typedef struct Entity_S {
+	GFC_TextLine			name; /**<name of the entity for debuggin>*/
+	Sprite					*sprite;/**<Graphical represenations*/
+	float					frame;/**<for drawing*/
+	GFC_Vector2D			position;/**<where to draw*/
+	GFC_Vector2D			velocity;/**<how are we moving*/
+	GFC_Vector2D			acceleration;/**/
+	float					gravity;/*keepiing seperate from acceleration just in case I need both*/
+	GFC_Vector2D			ceneter;/*Determines the center of the character		USE Bottom center for platformer, dead center for not that*/
+	GFC_Rect				bounds;
+
+	EntityTeamType			team;
+	EntityCollisionLayers	layer;
+	Uint8					inuse;// can make variables private 
+
+
 	
 	void (*think)(struct Entity_S* self);// For making decisions
 	void (*update)(struct Entity_S* self);//execute decisions
@@ -72,4 +98,32 @@ void entity_system_update();
 
 /*@brief Incase I want to animate something */
 void entityAnimate(Entity* self);
+
+/**
+* @brief gets collision between two entities
+* @returns 1 if true
+*/
+int entity_collision(Entity* self,  Entity* other);
+
+/**
+* @brief gets collision between two entities 
+* @param poc will store the vector point of collision
+* @param normal will send the normal of the vector
+* @returns 1 if true
+*/
+int entity_collision_poc(Entity* self, GFC_Rect rect, GFC_Vector2D* poc, GFC_Vector2D* normal);
+
+/**
+* @brief gets collision between two entities
+* @param poc will store the vector point of collision
+* @param normal will send the normal of the vector
+* @returns 1 if true
+*/
+int entity_obj_collision_poc(Entity* self, GFC_Rect rect, GFC_Vector2D* poc, GFC_Vector2D* normal);
+
+/**
+* @brief gets collision of all enities
+* @returns 1 if true
+*/
+void entity_system_collision();
 #endif

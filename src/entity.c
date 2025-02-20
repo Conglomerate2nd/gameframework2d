@@ -79,9 +79,12 @@ Entity* entity_new()
 	slog("no more available entities");
 	return NULL;
 }
+
 void entityThink(Entity* self) {
+	int i;
 	if (!self)return;
 	if (self->think)self->think(self);
+
 }
 
 void entity_system_think() 
@@ -149,4 +152,96 @@ void entityAnimate(Entity* self) {
 	if (!self)return;
 	self->frame += .1;
 	if (self->frame >= 16)self->frame = 0;
+}
+
+int entity_layer_check(Entity* self, EntityCollisionLayers layer) {
+	if (!self)return 0;
+	return self->layer & layer;//binary math
+}
+
+void entity_remove_collision_layer(Entity* self, EntityCollisionLayers layer) {
+	if (!self)return;
+	self->layer &= ~layer;// ~not layer
+}
+
+void entity_set_layer(Entity* self, EntityCollisionLayers layer) {
+	if (!self)return;
+	self->layer |= layer;
+}
+
+ //Providd by professor
+int entity_collision(Entity* self, Entity* other) 
+{
+	GFC_Rect bounds1, bounds2;
+
+	if ((!self) || (!other)) return 0;
+	if (self== other) return 0;
+	//if ((self->team == other->team)) return 4;
+	//if (!(self->layer == other->layer)) return;
+
+	gfc_rect_copy(bounds1, self->bounds);
+	gfc_rect_copy(bounds2, other->bounds);
+
+	
+	return gfc_rect_overlap(bounds1, bounds2);
+}
+
+
+int entity_collision_poc(Entity* self, Entity* other, GFC_Vector2D *poc, GFC_Vector2D *normal) 
+{
+	GFC_Rect bounds1, bounds2;
+	
+
+	if ((!self) || (!other)) return 0;
+	if (self == other) return 0;
+	if ((self->team == other->team)) return 0;
+	//if (!(self->layer == other->layer)) return;
+
+	gfc_rect_copy(bounds1, self->bounds);
+	gfc_rect_copy(bounds2, other->bounds);
+
+	return gfc_rect_overlap_poc(bounds1, bounds2, poc, normal);
+}
+
+int entity_obj_collision_poc(Entity* self,GFC_Rect rect, GFC_Vector2D* poc, GFC_Vector2D* normal) 
+{
+	GFC_Rect bounds1, bounds2;
+
+
+	if ((!self)) return 0;
+	//if (self == other) return 0;
+	//if ((self->team == other->team)) return 0;
+	//if (!(self->layer == other->layer)) return;
+
+	gfc_rect_copy(bounds1, self->bounds);
+	gfc_rect_copy(bounds2, rect);
+
+	return gfc_rect_overlap_poc(bounds1, bounds2, poc, normal);
+}
+
+void entity_system_collision()
+{
+	int i,j;
+	for (i = 0; i < _entManager.entityMax; i++)
+	{
+		if (!_entManager.entityList[i].inuse) continue;// skip this iteraion
+		
+		for (j = 0; j < _entManager.entityMax; j++)
+		{
+			if (!_entManager.entityList[j].inuse) continue;// skip this iteraion
+			
+			if (&_entManager.entityList[j] == &_entManager.entityList[i]) {
+				//if the adress is the same, skip.
+				//slog("hit the same");
+				continue;
+			}
+			
+			if (entity_collision(&_entManager.entityList[i], &_entManager.entityList[j]))
+			{
+				slog("colliding");
+			}
+
+			entity_collision(&_entManager.entityList[i], &_entManager.entityList[j]);
+		}
+	}
 }

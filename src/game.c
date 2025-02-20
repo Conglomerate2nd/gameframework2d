@@ -1,18 +1,24 @@
 #include <SDL.h>
 #include "simple_logger.h"
-
+#include "gfc_input.h"
 #include "gf2d_graphics.h"
+#include "gfc_shape.h"
 #include "gf2d_sprite.h"
+
 #include "entity.h"
 #include "player.h"
+#include "flyer.h"
+#include "walker.h"
+#include "world.h"
 
 int main(int argc, char * argv[])
 {
     /*variable declarations*/
     int done = 0;
     const Uint8 * keys;
-    Sprite *sprite;
-    
+    //Sprite *sprite;
+    World *world;
+    gfc_input_init("input.cfg");
     int mx,my;
     float mf = 0;
     Sprite *mouse;
@@ -36,10 +42,18 @@ int main(int argc, char * argv[])
     SDL_ShowCursor(SDL_DISABLE);
     
     /*demo setup*/
-    sprite = gf2d_sprite_load_image("images/backgrounds/test.png");
+    //sprite = gf2d_sprite_load_image("images/backgrounds/test.png");
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
 
     player = player_new();
+    world = world_test_new();
+    //Hardcode Test
+    Entity* walk = walker_new();
+    //Entity* fly = flyer_new();
+    GFC_Rect rect = gfc_rect(0,100,100,5);
+    
+
+
     slog("press [escape] to quit");
     /*main game loop*/
     while(!done)
@@ -56,6 +70,10 @@ int main(int argc, char * argv[])
         */
         entity_system_think();
         entity_system_update();
+        entity_system_collision();
+
+
+
         /*
         * Entity and Update End
         */
@@ -63,8 +81,8 @@ int main(int argc, char * argv[])
         gf2d_graphics_clear_screen();// clears drawing buffers
         // all drawing should happen betweem clear_screen and next_frame
             //backgrounds drawn first
-            gf2d_sprite_draw_image(sprite,gfc_vector2d(0,0));
-            
+            //gf2d_sprite_draw_image(sprite,gfc_vector2d(0,0));
+            world_draw(world);
 
             //Between Background and UI
             entity_system_draw();
@@ -82,12 +100,21 @@ int main(int argc, char * argv[])
 
         gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
         
+
+        /*
+        test demo
+        */
+       // entity_obj_collision_poc(player,rect,);
+
         if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
 
     //not necessary but just in case
     entity_free(player);
+    entity_free(walk);
+    //entity_free(fly);
+    world_free(world);
     slog("---==== END ====---");
     return 0;
 }
