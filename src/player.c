@@ -41,9 +41,10 @@ Entity* player_new()
 		0
 	);
 	self->frame = 0;
+	self->velocity.y = 3;
 	self->position = gfc_vector2d(0,0);
 	self->bounds = gfc_rect(self->position.x, self->position.y, 64, 64);
-
+	
 	self->think = playerThink;
 	self->update = playerUpdate;
 	self->free = playerFree;
@@ -72,6 +73,9 @@ void playerThink(Entity* self)
 	}
 	else self->velocity.x = 0;
 
+
+	
+	/*
 	if (keys[SDL_SCANCODE_S]){
 		//slog("here Down");
 		self->velocity.y += 3;
@@ -80,7 +84,9 @@ void playerThink(Entity* self)
 		//slog("here Up");
 		self->velocity.y = -3;
 	}
-	else self->velocity.y = 0;
+	else self->velocity.y = 0;//eliminate this line for gravity
+	*/
+
 	/*  TEST FOR FOLLOW MOuse
 	Sint32 mx = 0, my = 0;
 	SDL_GetMouseState(&mx, &my);
@@ -89,28 +95,15 @@ void playerThink(Entity* self)
 	if (self->position.x > mx)dir.x = -1;
 	if (self->position.y > my)dir.y = -1;
 	*/
-	/*
-	if (gfc_input_key_held("left")) {
-		self->velocity.x = 5;
-	}
-	else if (gfc_input_key_held("right")) {
-		self->velocity.x = -5;
-	}
-	else self->velocity.x = 0;
-
-	if (gfc_input_key_held("down")) {
-		self->velocity.y = 5;
-	}
-	else if (gfc_input_key_held("up")) {
-		self->velocity.y = -5;
-	}
-	else self->velocity.y = 0;
-	*/
+	
 	playerPhysicsCalc(self);
+
 	gfc_vector2d_normalize(&dir);
-	gfc_vector2d_scale(self->velocity,dir,3);
+	//kinda important but ruins gravity
+	//gfc_vector2d_scale(self->velocity,dir,3);
 
 	self->bounds = gfc_rect(self->position.x, self->position.y, 64, 64);
+	
 }
 void playerUpdate(Entity* self)
 {
@@ -124,7 +117,7 @@ void playerUpdate(Entity* self)
 
 	if(!self)return;
 	//entityAnimate(self);//Uncomment to animate
-	gfc_vector2d_add(self->position, self->position, self->velocity);
+	
 
 	
 }
@@ -141,23 +134,24 @@ void playerPhysicsCalc(Entity* self) {
 	//time is not a variable because adding a variable each frame is the same as multiplying over time
 
 	//position = position + velocity * time
-	/*
+	
 	self->position.x += self->velocity.x;
 	self->position.y += self->velocity.y;
-	*/
-	gfc_vector2d_add(self->position, self->position, self->velocity);
+	
+	//gfc_vector2d_add(self->position, self->position, self->velocity);
 
 	
 	//velocity = velocity + acceleration  * time
 	//velocity = velocity + (acceleration + gravity ) * time for y
-	/*
+	
 	self->velocity.x += self->acceleration.x;
 	self->velocity.y += self->acceleration.y + self->gravity;
-	*/
+	
 	//for gravity 
 
 
-	self->acceleration.y = self->gravity;
-	gfc_vector2d_add(self->velocity, self->velocity, self->acceleration);
+
+	//self->acceleration.y = self->gravity;
+	//gfc_vector2d_add(self->velocity, self->velocity, self->acceleration);
 
 }

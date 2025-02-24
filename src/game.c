@@ -18,7 +18,7 @@ int main(int argc, char * argv[])
     const Uint8 * keys;
     //Sprite *sprite;
     World *world;
-    gfc_input_init("input.cfg");
+    //gfc_input_init("input.cfg");
     int mx,my;
     float mf = 0;
     Sprite *mouse;
@@ -46,11 +46,11 @@ int main(int argc, char * argv[])
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
 
     player = player_new();
-    world = world_test_new();
+    world = world_load("maps/world.map");
     //Hardcode Test
     Entity* walk = walker_new();
     //Entity* fly = flyer_new();
-    GFC_Rect rect = gfc_rect(0,100,100,5);
+    //GFC_Rect rect = gfc_rect(0,100,100,5);
     
 
 
