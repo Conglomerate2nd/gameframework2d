@@ -1,5 +1,6 @@
 #include "simple_logger.h"
 #include "entity.h"
+#include "world.h"
 
 typedef struct {
 	Entity*		entityList;

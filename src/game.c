@@ -17,7 +17,7 @@ int main(int argc, char * argv[])
     int done = 0;
     const Uint8 * keys;
     //Sprite *sprite;
-    World *world;
+    //World *world;
     //gfc_input_init("input.cfg");
     int mx,my;
     float mf = 0;
@@ -46,7 +46,7 @@ int main(int argc, char * argv[])
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
 
     player = player_new();
-    world = world_load("maps/world.map");
+    world_load("maps/world.map");
     //Hardcode Test
     Entity* walk = walker_new();
     //Entity* fly = flyer_new();
@@ -82,7 +82,7 @@ int main(int argc, char * argv[])
         // all drawing should happen betweem clear_screen and next_frame
             //backgrounds drawn first
             //gf2d_sprite_draw_image(sprite,gfc_vector2d(0,0));
-            world_draw(world);
+            world_draw_active(activeworld);
 
             //Between Background and UI
             entity_system_draw();
@@ -114,7 +114,7 @@ int main(int argc, char * argv[])
     entity_free(player);
     entity_free(walk);
     //entity_free(fly);
-    world_free(world);
+    world_free(activeworld);
     slog("---==== END ====---");
     return 0;
 }

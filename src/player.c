@@ -2,6 +2,7 @@
 #include "simple_json.h"
 #include "gfc_input.h"
 #include "player.h"
+#include "world.h"
 
 
 void playerThink(Entity* self);
@@ -41,8 +42,9 @@ Entity* player_new()
 		0
 	);
 	self->frame = 0;
-	self->velocity.y = 3;
-	self->position = gfc_vector2d(0,0);
+	self->acceleration.y = .5;
+
+	self->position = gfc_vector2d(64,64);
 	self->bounds = gfc_rect(self->position.x, self->position.y, 64, 64);
 	
 	self->think = playerThink;
@@ -72,6 +74,12 @@ void playerThink(Entity* self)
 		self->velocity.x = 3;
 	}
 	else self->velocity.x = 0;
+
+	if (keys[SDL_SCANCODE_SPACE]) {
+		//slog("here Left");
+		self->velocity.y = -.5;
+	}
+	else self->velocity.y += self->acceleration.y;
 
 
 	
@@ -103,6 +111,8 @@ void playerThink(Entity* self)
 	//gfc_vector2d_scale(self->velocity,dir,3);
 
 	self->bounds = gfc_rect(self->position.x, self->position.y, 64, 64);
+	//slog("in player");
+	world_tile_collide_active(activeworld, self->bounds);
 	
 }
 void playerUpdate(Entity* self)
