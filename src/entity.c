@@ -1,4 +1,5 @@
 #include "simple_logger.h"
+#include "gf2d_draw.h"
 #include "entity.h"
 #include "world.h"
 
@@ -126,6 +127,7 @@ void entity_system_draw()
 
 void entityDraw(Entity* self)
 {
+	GFC_Vector2D drawAtOffset;
 	if (!self)
 	{
 		return;
@@ -133,9 +135,11 @@ void entityDraw(Entity* self)
 
 	if (!self->sprite)return;
 
+	gfc_vector2d_add(drawAtOffset, self->position, self->offset);
+
 	gf2d_sprite_render(
 		self->sprite,
-		self->position,
+		drawAtOffset,
 		NULL,//scale
 		NULL,//center
 		NULL,//rotation
@@ -145,8 +149,8 @@ void entityDraw(Entity* self)
 		self->frame
 	);
 		
-
-
+	//BOUND TESTING DRAW RECTS
+	gf2d_draw_rect(self->bounds,GFC_COLOR_BLUE);
 }
 
 void entityAnimate(Entity* self) {
@@ -239,7 +243,8 @@ void entity_system_collision()
 			
 			if (entity_collision(&_entManager.entityList[i], &_entManager.entityList[j]))
 			{
-				slog("colliding");
+				//slog("colliding");
+				//THIS WORKS
 			}
 
 			entity_collision(&_entManager.entityList[i], &_entManager.entityList[j]);

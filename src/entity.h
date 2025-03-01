@@ -35,6 +35,9 @@ typedef struct Entity_S {
 	float					gravity;/*keepiing seperate from acceleration just in case I need both*/
 	GFC_Vector2D			ceneter;/*Determines the center of the character		USE Bottom center for platformer, dead center for not that*/
 	GFC_Rect				bounds;
+	GFC_Vector2D			*pointOfContact;//for collision function
+	GFC_Vector2D			*normal;
+	GFC_Vector2D			offset;
 
 	EntityTeamType			team;
 	EntityCollisionLayers	layer;

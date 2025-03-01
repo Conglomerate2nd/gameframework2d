@@ -35,18 +35,23 @@ Entity* player_new()
 	
 	//to gt frame dimensions ddivide image dimensions by number of frames. 
 	self->sprite = gf2d_sprite_load_all(
-		"images/gobblo.png",
-		128,
-		128,
+		"images/Sprites/gobblo.png",
+		64,
+		64,
 		NULL,
 		0
 	);
 	self->frame = 0;
 	self->acceleration.y = .5;
+	self->position = gfc_vector2d(64, 64);
 
-	self->position = gfc_vector2d(64,64);
-	self->bounds = gfc_rect(self->position.x, self->position.y, 64, 64);
+	//setting the  offset by 64 seems to work well with the bounds, but needs more testing as sprite is 128*128 pixels
+	self->offset.y = 0;
+	self->offset.x = 0;
 	
+	self->bounds = gfc_rect(self->position.x+self->offset.x, self->position.y+self->offset.y, 64, 64);
+	
+
 	self->think = playerThink;
 	self->update = playerUpdate;
 	self->free = playerFree;
@@ -76,10 +81,10 @@ void playerThink(Entity* self)
 	else self->velocity.x = 0;
 
 	if (keys[SDL_SCANCODE_SPACE]) {
-		//slog("here Left");
-		self->velocity.y = -.5;
+		//slog("%f velocity y", self->velocity.y);
+		self->position.y += -15;
 	}
-	else self->velocity.y += self->acceleration.y;
+	else self->velocity.y = self->velocity.y;
 
 
 	
@@ -112,7 +117,8 @@ void playerThink(Entity* self)
 
 	self->bounds = gfc_rect(self->position.x, self->position.y, 64, 64);
 	//slog("in player");
-	world_tile_collide_active(activeworld, self->bounds);
+	world_tile_collide_active_entity(activeworld,self);
+	//world_tile_collide_active(activeworld, self->bounds);
 	
 }
 void playerUpdate(Entity* self)
@@ -156,6 +162,14 @@ void playerPhysicsCalc(Entity* self) {
 	
 	self->velocity.x += self->acceleration.x;
 	self->velocity.y += self->acceleration.y + self->gravity;
+
+	if (self->velocity.y<-15) {
+		self->velocity.y = -15;
+	}
+
+	if (self->velocity.y > 30) {
+		self->velocity.y = 30;
+	}
 	
 	//for gravity 
 
