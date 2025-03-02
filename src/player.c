@@ -3,6 +3,7 @@
 #include "gfc_input.h"
 #include "player.h"
 #include "world.h"
+#include "camera.h"
 
 
 void playerThink(Entity* self);
@@ -119,6 +120,7 @@ void playerThink(Entity* self)
 	//slog("in player");
 	world_tile_collide_active_entity(activeworld,self);
 	//world_tile_collide_active(activeworld, self->bounds);
+	//BOUND TESTING DRAW RECTS
 	
 }
 void playerUpdate(Entity* self)
@@ -135,7 +137,7 @@ void playerUpdate(Entity* self)
 	//entityAnimate(self);//Uncomment to animate
 	
 
-	
+	camera_ceneter_at(self->position);
 }
 
 void playerFree(Entity* self)

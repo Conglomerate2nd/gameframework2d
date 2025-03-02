@@ -2,6 +2,7 @@
 #include "gf2d_draw.h"
 #include "entity.h"
 #include "world.h"
+#include "camera.h"
 
 typedef struct {
 	Entity*		entityList;
@@ -128,18 +129,23 @@ void entity_system_draw()
 void entityDraw(Entity* self)
 {
 	GFC_Vector2D drawAtOffset;
+	GFC_Vector2D position;
+	GFC_Vector2D offset;
 	if (!self)
 	{
 		return;
 	}
 
 	if (!self->sprite)return;
-
-	gfc_vector2d_add(drawAtOffset, self->position, self->offset);
+	
+	//No idea what this did or does
+	//gfc_vector2d_add(drawAtOffset, self->position, self->offset);
+	offset = camera_get_offset();
+	gfc_vector2d_add(position, self->position,offset);
 
 	gf2d_sprite_render(
 		self->sprite,
-		drawAtOffset,
+		position,
 		NULL,//scale
 		NULL,//center
 		NULL,//rotation
@@ -149,8 +155,7 @@ void entityDraw(Entity* self)
 		self->frame
 	);
 		
-	//BOUND TESTING DRAW RECTS
-	gf2d_draw_rect(self->bounds,GFC_COLOR_BLUE);
+	
 }
 
 void entityAnimate(Entity* self) {

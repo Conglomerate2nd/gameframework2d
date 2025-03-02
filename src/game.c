@@ -10,9 +10,13 @@
 #include "flyer.h"
 #include "walker.h"
 #include "world.h"
+#include "camera.h"
 
 int main(int argc, char * argv[])
 {
+    GFC_Vector2D screen;
+    screen.x = 1200;
+    screen.y = 720;
     /*variable declarations*/
     int done = 0;
     const Uint8 * keys;
@@ -40,6 +44,7 @@ int main(int argc, char * argv[])
     gf2d_sprite_init(1024);
     entity_system_init(100);//Very low ball number
     SDL_ShowCursor(SDL_DISABLE);
+    camera_set_size(screen);
     
     /*demo setup*/
     //sprite = gf2d_sprite_load_image("images/backgrounds/test.png");
@@ -51,7 +56,7 @@ int main(int argc, char * argv[])
     Entity* walk = walker_new();
     //Entity* fly = flyer_new();
     //GFC_Rect rect = gfc_rect(0,100,100,5);
-    
+    world_setup_camera(activeworld);
 
 
     slog("press [escape] to quit");
