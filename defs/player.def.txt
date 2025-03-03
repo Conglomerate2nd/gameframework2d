@@ -1,0 +1,9 @@
+{
+"player"
+		{
+			"name":"player.h",
+			"sprite:"images/gobblo.png",
+			"frameHeight":128,
+			"frameWidth":128
+		}
+}
