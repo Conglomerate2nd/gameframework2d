@@ -9,4 +9,5 @@
 * @return  returns a pointer to the new player returns null on failure
 */
 Entity* walker_new();
+Entity* walker_new_pos(int x, int y);
 #endif

@@ -3,6 +3,7 @@
 
 #include "gf2d_sprite.h"
 #include "gfc_shape.h"
+#include "entity.h"
 
 typedef struct
 {
@@ -77,8 +78,8 @@ void world_tile_collide_active(World* world, GFC_Rect bounds);
 
 /**
 * List as of now
-* 
-*	tile_1 - solid block/ should be
+*	tile_1 - player  spawn
+*	tile_2 - solid block
 * 
 * Planned
 * 
@@ -89,7 +90,12 @@ void world_tile_collide_active(World* world, GFC_Rect bounds);
 *	tile_5 hazard
 *	
 *	tile_6 spawn points
-*	tile_7  stick to top - spiderman style
+*	tile_7  player spawn
+*	tile_8	walker/rocco spawn
+*	tile_9	flyer/buggo spawn
+*	tile_10 
+*	tile_11
+*	tile_12
 */
 void tile_1(int i, int j, World* world, Entity* self);
 void tile_2(int i, int j, World* world, Entity* self);

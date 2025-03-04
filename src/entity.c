@@ -256,3 +256,39 @@ void entity_system_collision()
 		}
 	}
 }
+
+void entityPhysicsCalc(Entity* self) {
+	//This is for all entities except  player for now.
+
+	//time is not a variable because adding a variable each frame is the same as multiplying over time
+
+	//position = position + velocity * time
+
+	self->position.x += self->velocity.x;
+	self->position.y += self->velocity.y;
+
+	//gfc_vector2d_add(self->position, self->position, self->velocity);
+
+
+	//velocity = velocity + acceleration  * time
+	//velocity = velocity + (acceleration + gravity ) * time for y
+
+	self->velocity.x += self->acceleration.x;
+	self->velocity.y += self->acceleration.y + self->gravity;
+
+	if (self->velocity.y < -15) {
+		self->velocity.y = -15;
+	}
+
+	if (self->velocity.y > 30) {
+		self->velocity.y = 30;
+	}
+
+	//for gravity 
+
+
+
+	//self->acceleration.y = self->gravity;
+	//gfc_vector2d_add(self->velocity, self->velocity, self->acceleration);
+
+}

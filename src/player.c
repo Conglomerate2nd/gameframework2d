@@ -44,7 +44,7 @@ Entity* player_new()
 	);
 	self->frame = 0;
 	self->acceleration.y = .5;
-	self->position = gfc_vector2d(64, 64);
+	self->position = gfc_vector2d(128, 128);
 
 	//setting the  offset by 64 seems to work well with the bounds, but needs more testing as sprite is 128*128 pixels
 	self->offset.y = 0;
@@ -52,6 +52,55 @@ Entity* player_new()
 	
 	self->bounds = gfc_rect(self->position.x+self->offset.x, self->position.y+self->offset.y, 64, 64);
 	
+
+	self->think = playerThink;
+	self->update = playerUpdate;
+	self->free = playerFree;
+
+
+
+	return self;
+}
+
+Entity* player_new_pos(int x,int y)
+{
+	Entity* self;
+	self = entity_new();
+
+	if (!self)
+	{
+		slog("Failed to create new player");
+		return NULL;
+	}
+
+
+	//can all be defined either here through hard coding or by using a json file
+
+	//GFC_TextLine	name; /**<name of the entity for debuggin>*/
+	//Sprite* sprite;/**<Graphical represenations*/
+	//float			frame;/**<for drawing*/
+	//GFC_Vector2D	position;/**<where to draw*/
+	//GFC_Vector2D	velocity;/**<how are we moving*/
+	//GFC_Vector2D	acceleration;
+
+	//to gt frame dimensions ddivide image dimensions by number of frames. 
+	self->sprite = gf2d_sprite_load_all(
+		"images/Sprites/gobblo.png",
+		64,
+		64,
+		NULL,
+		0
+	);
+	self->frame = 0;
+	self->acceleration.y = .5;
+	self->position = gfc_vector2d(x, y);
+
+	//setting the  offset by 64 seems to work well with the bounds, but needs more testing as sprite is 128*128 pixels
+	self->offset.y = 0;
+	self->offset.x = 0;
+
+	self->bounds = gfc_rect(self->position.x + self->offset.x, self->position.y + self->offset.y, 64, 64);
+
 
 	self->think = playerThink;
 	self->update = playerUpdate;

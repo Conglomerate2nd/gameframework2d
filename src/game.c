@@ -27,6 +27,7 @@ int main(int argc, char * argv[])
     float mf = 0;
     Sprite *mouse;
     GFC_Color mouseGFC_Color = gfc_color8(0,100,255,200);
+    
     Entity* player;// not necessary, can be declared at definition, but helps readability
     
     /*program initializtion*/
@@ -50,10 +51,10 @@ int main(int argc, char * argv[])
     //sprite = gf2d_sprite_load_image("images/backgrounds/test.png");
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
 
-    player = player_new();
+    //player = player_new();
     world_load("maps/world.map");
     //Hardcode Test
-    Entity* walk = walker_new();
+    //Entity* walk = walker_new_pos(128, 128);
     //Entity* fly = flyer_new();
     //GFC_Rect rect = gfc_rect(0,100,100,5);
     world_setup_camera(activeworld);
@@ -116,8 +117,8 @@ int main(int argc, char * argv[])
     }
 
     //not necessary but just in case
-    entity_free(player);
-    entity_free(walk);
+    entity_free_all(NULL);
+    //entity_free(walk);
     //entity_free(fly);
     world_free(activeworld);
     slog("---==== END ====---");

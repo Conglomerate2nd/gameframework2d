@@ -5,12 +5,14 @@
 #include "gfc_shape.h"
 
 #include "entity.h"
+#include "player.h"
+#include "walker.h"
 #include "world.h"
 #include "camera.h"
 
 
 
-typedef struct{
+typedef struct {
 	GFC_Rect bounds[];
 }worldData;
 
@@ -52,7 +54,7 @@ void world_tile_layer_build(World* world) {
 			position.y = j * world->tileSet->frame_h;
 
 			frame = world->tileMap[index] - 1;
-			
+
 			gf2d_sprite_draw_to_surface(
 				world->tileSet,
 				position,
@@ -73,23 +75,23 @@ void world_tile_layer_build(World* world) {
 		slog("failed to convert world tile layer to textue");
 		return;
 	}
-	
+
 }
 
 World* world_load(const char* filename)
 {
-	World *world = NULL;
-	SJson *json = NULL;
-	SJson *worldJson = NULL;
-	SJson *verticalArray, *horizontalArray;
-	Uint32 width=0, height=0;
+	World* world = NULL;
+	SJson* json = NULL;
+	SJson* worldJson = NULL;
+	SJson* verticalArray, * horizontalArray;
+	Uint32 width = 0, height = 0;
 	int i, j;
 	int tile;
 	SJson* object;
 	const char* tileSet;
 	int frame_w, frame_h;
 	int frames_per_line;
-	
+
 
 	if (!filename)
 	{
@@ -119,11 +121,11 @@ World* world_load(const char* filename)
 	}
 
 	height = sj_array_get_count(verticalArray);
-	horizontalArray = sj_array_get_nth(verticalArray,0);
+	horizontalArray = sj_array_get_nth(verticalArray, 0);
 	width = sj_array_get_count(horizontalArray);
-	
+
 	//test for bounds.
-	
+
 
 	//slog(width, height);
 	slog("%i wide", width);
@@ -135,34 +137,40 @@ World* world_load(const char* filename)
 		sj_free(json);
 		return NULL;
 	}
-	
+
 	for (j = 0; j < height; j++)
 	{
 		horizontalArray = sj_array_get_nth(verticalArray, j);
 		if (!horizontalArray)continue; //might not be necessarry or might be better to error over but skip for now.
 		for (i = 0; i < width; i++)
 		{
-			
+
 			object = sj_array_get_nth(horizontalArray, i);
 			if (!object)continue;
-			
+
 			tile = 0;
 			sj_get_integer_value(object, &tile);//this sets the value of object and allocates it to tile's address, effectively setting it to object
-			world->tileMap[i + (j* width)] = tile;
+			world->tileMap[i + (j * width)] = tile;
+			if (world->tileMap[i + (j * width)]==7) {
+				player_new_pos(i * world->tileWidth, j * world->tileHeight);
+			}
+			if (world->tileMap[i + (j * width)] == 8) {
+				walker_new_pos(i * world->tileWidth, j * world->tileHeight);
+			}
 			//world->tileMap[i ] = tile;
-			
+
 			//sj_get_uint8_value(object, &world->tileMap[j * width + i]);
 
 			//bound test begin
 			/*
 			if (tile == 1) {
 				world->bounds[i + (j * width)] = gfc_rect(i * 64, j * 64, 64, 64);
-				
+
 			}
 			*/
 			//bound test end
 		}
-		
+
 	}
 
 	//slog("loop failed");
@@ -172,12 +180,12 @@ World* world_load(const char* filename)
 		sj_free(json);
 		return NULL;
 	}
-	sj_object_get_value_as_int(worldJson,"frame_w",&frame_w);
+	sj_object_get_value_as_int(worldJson, "frame_w", &frame_w);
 	sj_object_get_value_as_int(worldJson, "frame_h", &frame_h);
 	sj_object_get_value_as_int(worldJson, "frames_per_line", &frames_per_line);
 
 	world->background = gf2d_sprite_load_image(sj_object_get_value_as_string(worldJson, "background"));
-	
+
 
 	slog("%i frame wide", frame_w);
 	slog("%i frame high", frame_h);
@@ -193,19 +201,19 @@ World* world_load(const char* filename)
 
 	slog("assigning to activeworld");
 	activeworld = world;
-	
+
 	slog("assigned");
 	sj_free(json);
 	return world;
 }
 
-World* world_test_new() 
+World* world_test_new()
 {
 	int i, j;
 	int width, height;
 	width = 65;
 	height = 45;
-	World *world;
+	World* world;
 	world = world_new(width, height);
 	if (!world) {
 		slog("failed to make a new world ");
@@ -220,28 +228,28 @@ World* world_test_new()
 		1,
 		1
 	);
-	for (i = 0; i < width; i++) 
+	for (i = 0; i < width; i++)
 	{
 		//slog(" at width");
 		world->tileMap[i] = 1;
-		world->tileMap[i + ((height - 1) * width)]= 1;
+		world->tileMap[i + ((height - 1) * width)] = 1;
 		//slog("Segment at width");
 	}
 	//i = 0;
 	for (i = 0; i < height; i++)
 	{
 		//slog(" at height");
-		world->tileMap[i*width] = 1;
-		world->tileMap[i*width + (width - 1)] = 1;
+		world->tileMap[i * width] = 1;
+		world->tileMap[i * width + (width - 1)] = 1;
 		//slog("Segment at height");
 	}
 	world_tile_layer_build(world);
 	return world;
 }
 
-World* world_new(Uint32 width,Uint32 height) 
+World* world_new(Uint32 width, Uint32 height)
 {
-	World *world;
+	World* world;
 	if ((!width) || (!height) || (width <= 0) || (height <= 0)) {
 		slog("cannot make a world with no width or height");
 		return NULL;
@@ -256,12 +264,12 @@ World* world_new(Uint32 width,Uint32 height)
 	//all defaults would go here
 	world->tileHeight = height;
 	world->tileWidth = width;
-	world->tileMap= gfc_allocate_array(sizeof(Uint8), height*width);
-	
+	world->tileMap = gfc_allocate_array(sizeof(Uint8), height * width);
+
 	return world;
 }
 
-void world_free(World* world) 
+void world_free(World* world)
 {
 	if (!world) {
 		slog("no world to free");
@@ -275,15 +283,15 @@ void world_free(World* world)
 	free(world);
 }
 
-void world_draw(World* world) 
+void world_draw(World* world)
 {
-	
+
 	if (!world) {
 		slog("no world to draw");
 		return;
 	}
-	
-	
+
+
 	GFC_Vector2D position;
 	//slog("It was poition");
 	position.x = 0;
@@ -292,15 +300,15 @@ void world_draw(World* world)
 	//originally the draw imag function had  vector2D(0,0), that was giving me an error, so I initialized position to 0,0 and am using it once
 	//to call draw at 0,0 and then for the for loops which will override the value.
 
-	gf2d_sprite_draw_image(world->background,position);
+	gf2d_sprite_draw_image(world->background, position);
 
 	gf2d_sprite_draw_image(world->tileLayer, position);
-	
+
 }
 
 void world_draw_active(World* world)
 {
-	
+
 
 	if (!activeworld) {
 		slog("no active world to draw");
@@ -373,17 +381,17 @@ void world_tile_collide(World* world, GFC_Rect bounds) {
 
 void world_tile_collide_active(World* world, GFC_Rect bounds)
 {
-	int i, j,index;
+	int i, j, index;
 	//NOTE refering to world crashes, but using activeworld works.
 	for (j = 0; j < activeworld->tileHeight; j++)
 	{
 		for (i = 0; i < activeworld->tileWidth; i++)
 		{
-			
+
 			index = i + (j * activeworld->tileWidth);//converts position on tilemap into position in array
 			if (activeworld->tileMap[index] == 0) continue;//skip this cause its empty
 
-			if (activeworld->tileMap[index]==1)
+			if (activeworld->tileMap[index] == 1)
 			{
 				//gfc_rect(i * 64, j * 64, 64, 64);
 				if (gfc_rect_overlap(bounds, gfc_rect(i * 64, j * 64, 64, 64))) {
@@ -404,7 +412,7 @@ void world_tile_collide_active(World* world, GFC_Rect bounds)
 }
 
 
-void world_tile_collide_active_entity(World* world, Entity *self) 
+void world_tile_collide_active_entity(World* world, Entity* self)
 {
 	int i, j, index;
 	//NOTE refering to world crashes, but using activeworld works.
@@ -425,77 +433,12 @@ void world_tile_collide_active_entity(World* world, Entity *self)
 			if (activeworld->tileMap[index] == 1)
 			{
 				//gfc_rect(i * 64, j * 64, 64, 64);
-				
+
 				//if (gfc_rect_overlap_poc(self->bounds, gfc_rect(i * 64, j * 64, 64, 64), self->pointOfContact, self->normal)) {
 				if (gfc_rect_overlap(self->bounds, gfc_rect(i * 64, j * 64, 64, 64))) {
-					//slog("hit at");
-					//slog("%i x", self->pointOfContact->x);
-					//slog("%i x", self->pointOfContact->y);
-					//self->position.x = self->pointOfContact->x;
-					//self->position.y = self->pointOfContact->y;
-					
-
-
-					//if at wall of tile, and not ontop or below same tile
-					//if that and is not there it  will push the player - use for treadmill tiles
-					//For one way tiles, have the tile push the player to the other side.
-					//slog("%f self position x", self->position.x);
-					//slog("%f self bounds x", self->bounds.x);
-
-					/*
-					if ((self->bounds.x+self->bounds.w > i * 64)&& (!((self->bounds.y + self->bounds.h > j * 64 + 64)||(self->bounds.y < j * 64))))
-					{
-						slog("on right");
-
-						//slog("%f x", i * 64);
-						//self->position.x = i * 64;
-						self->velocity.x = 0;
-						self->position.x = i*64+ 64;
-						
-						continue;//NOTE: I want the collision to check for one then pass, because we can't be colliding on multiple sidesof the same tile,
-								//if the player is colliding on the side, then they are definitely colliding with the top or bottommm
-						
-					}
-					//if at wall of tile, and not ontop or below same tile
-					//if that and is not there it  will push the player - use for treadmill tiles
-					if ((self->bounds.x < i * 64)&& (!((self->bounds.y + self->bounds.h > j * 64 + 64) || (self->bounds.y < j * 64))))
-					{
-						slog("on left");
-
-						//slog("%f x", i * 64);
-						//self->position.x = i * 64+64;
-						self->velocity.x = 0;
-						self->position.x = i * 64;
-						continue;//NOTE: I want the collision to check for one then pass, because we can't be colliding on multiple sidesof the same tile,
-						//if the player is colliding on the side, then they are definitely colliding with the top or bottommm
-
-					}	
-
-					
-					if ((self->bounds.y < j * 64))
-					{
-						//self->position.y = j * 64;
-						//slog("on top");
-						
-						self->velocity.y = 0;
-						self->position.y = (j-1) *64;//What this does is set the y position of self to the tile bottom of the tile above j
-					}
-
-					if ((self->bounds.y+self->bounds.h> j * 64 + 64))
-					{
-						//slog("on bottom");
-						//self->position.y = j * 64 + 64;
-						self->velocity.y = 0;
-						
-					 }
-
-
-
-					*/
-
 					tile_1(i, j, world, self);
 				}
-				
+
 
 			}
 			//bound test begin
@@ -511,6 +454,7 @@ void world_tile_collide_active_entity(World* world, Entity *self)
 	}
 }
 
+
 void tile_1(int i, int j, World* world, Entity* self)
 {
 
@@ -524,6 +468,10 @@ void tile_1(int i, int j, World* world, Entity* self)
 		//self->position.x = i * 64+64;
 		self->velocity.x = 0;
 		self->position.x = i * 64 - 64;
+		if (self->team == ETT_enemy || self->team == ETT_flyer)
+		{
+			self->directionX *= -1;
+		}
 		return;//NOTE: I want the collision to check for one then pass, because we can't be colliding on multiple sidesof the same tile,
 		//if the player is colliding on the side, then they are definitely colliding with the top or bottommm
 
@@ -537,7 +485,10 @@ void tile_1(int i, int j, World* world, Entity* self)
 		//self->position.x = i * 64;
 		self->velocity.x = 0;
 		self->position.x = i * 64 + 64;
-
+		if (self->team == ETT_enemy || self->team == ETT_flyer)
+		{
+			self->directionX *= -1;//IF enemy flip their direction of movement
+		}
 		return;//NOTE: I want the collision to check for one then pass, because we can't be colliding on multiple sidesof the same tile,
 		//if the player is colliding on the side, then they are definitely colliding with the top or bottommm
 
@@ -554,6 +505,10 @@ void tile_1(int i, int j, World* world, Entity* self)
 
 		self->velocity.y = 0;
 		self->position.y = (j - 1) * 64;//What this does is set the y position of self to the tile bottom of the tile above j
+		if (self->team == ETT_flyer)
+		{
+			self->directionY *= -1;//IF enemy flip their direction of movement
+		}
 		return;
 	}
 
@@ -563,14 +518,19 @@ void tile_1(int i, int j, World* world, Entity* self)
 		//self->position.y = j * 64 + 64;
 		self->velocity.y = 0;
 		//Move to +1 below the tile so player does not stick and will fall affected by gravity
-		self->position.y = j* 64+65;//What this does is set the y position of self to the tile bottom of the tile above j
+		self->position.y = j * 64 + 65;//What this does is set the y position of self to the tile bottom of the tile above j
+		if (self->team == ETT_flyer)
+		{
+			self->directionY *= -1;//IF enemy flip their direction of movement
+		}
 		return;
 	}
 
 }
 
 
-void tile_2(int i, int j, World* world, Entity* self) 
+
+void tile_2(int i, int j, World* world, Entity* self)
 {
 
 	//Not working for full collision, perfect for one way tiles  for top or left modidfied

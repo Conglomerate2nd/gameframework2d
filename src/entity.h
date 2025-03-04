@@ -11,6 +11,7 @@ typedef enum
 	ETT_none,
 	ETT_player,
 	ETT_enemy,
+	ETT_flyer,
 	ETT_item,
 	ETT_world_object,
 	ETT_MAX
@@ -32,12 +33,16 @@ typedef struct Entity_S {
 	GFC_Vector2D			position;/**<where to draw*/
 	GFC_Vector2D			velocity;/**<how are we moving*/
 	GFC_Vector2D			acceleration;/**/
-	float					gravity;/*keepiing seperate from acceleration just in case I need both*/
-	GFC_Vector2D			ceneter;/*Determines the center of the character		USE Bottom center for platformer, dead center for not that*/
+	float					gravity;/*keepiing seperate from acceleration just in case I need both + not declaring autimatically just incase I dont want gravity */
+	GFC_Vector2D			center;/*Determines the center of the character		USE Bottom center for platformer, dead center for not that*/
 	GFC_Rect				bounds;
 	GFC_Vector2D			*pointOfContact;//for collision function
 	GFC_Vector2D			*normal;
 	GFC_Vector2D			offset;
+
+	GFC_Vector2D			*flip;
+	int						directionX; //Multiplied against functions like velocity to change direction along x
+	int						directionY; //Multiplied against functions like velocity to change direction along y
 
 	EntityTeamType			team;
 	EntityCollisionLayers	layer;
@@ -129,4 +134,9 @@ int entity_obj_collision_poc(Entity* self, GFC_Rect rect, GFC_Vector2D* poc, GFC
 * @returns 1 if true
 */
 void entity_system_collision();
+
+/**
+* @brief this calculates gravity position and velocity.
+*/
+void entityPhysicsCalc(Entity* self);
 #endif
