@@ -11,7 +11,6 @@ typedef enum
 	ETT_none,
 	ETT_player,
 	ETT_enemy,
-	ETT_flyer,
 	ETT_item,
 	ETT_world_object,
 	ETT_MAX
@@ -45,6 +44,7 @@ typedef struct Entity_S {
 	int						directionY; //Multiplied against functions like velocity to change direction along y
 
 	EntityTeamType			team;
+	int						isFlying;//if 1 yes
 	EntityCollisionLayers	layer;
 	Uint8					inuse;// can make variables private 
 

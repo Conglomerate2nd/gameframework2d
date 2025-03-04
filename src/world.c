@@ -7,6 +7,7 @@
 #include "entity.h"
 #include "player.h"
 #include "walker.h"
+#include "flyer.h"
 #include "world.h"
 #include "camera.h"
 
@@ -151,11 +152,16 @@ World* world_load(const char* filename)
 			tile = 0;
 			sj_get_integer_value(object, &tile);//this sets the value of object and allocates it to tile's address, effectively setting it to object
 			world->tileMap[i + (j * width)] = tile;
+
+			//spawn statements
 			if (world->tileMap[i + (j * width)]==7) {
 				player_new_pos(i * world->tileWidth, j * world->tileHeight);
 			}
 			if (world->tileMap[i + (j * width)] == 8) {
 				walker_new_pos(i * world->tileWidth, j * world->tileHeight);
+			}
+			if (world->tileMap[i + (j * width)] == 9) {
+				flyer_new_pos(i * world->tileWidth, j * world->tileHeight);
 			}
 			//world->tileMap[i ] = tile;
 
@@ -468,7 +474,7 @@ void tile_1(int i, int j, World* world, Entity* self)
 		//self->position.x = i * 64+64;
 		self->velocity.x = 0;
 		self->position.x = i * 64 - 64;
-		if (self->team == ETT_enemy || self->team == ETT_flyer)
+		if (self->team == ETT_enemy)
 		{
 			self->directionX *= -1;
 		}
@@ -485,7 +491,7 @@ void tile_1(int i, int j, World* world, Entity* self)
 		//self->position.x = i * 64;
 		self->velocity.x = 0;
 		self->position.x = i * 64 + 64;
-		if (self->team == ETT_enemy || self->team == ETT_flyer)
+		if (self->team == ETT_enemy)
 		{
 			self->directionX *= -1;//IF enemy flip their direction of movement
 		}
@@ -505,7 +511,7 @@ void tile_1(int i, int j, World* world, Entity* self)
 
 		self->velocity.y = 0;
 		self->position.y = (j - 1) * 64;//What this does is set the y position of self to the tile bottom of the tile above j
-		if (self->team == ETT_flyer)
+		if (self->isFlying == 1)
 		{
 			self->directionY *= -1;//IF enemy flip their direction of movement
 		}
@@ -519,7 +525,7 @@ void tile_1(int i, int j, World* world, Entity* self)
 		self->velocity.y = 0;
 		//Move to +1 below the tile so player does not stick and will fall affected by gravity
 		self->position.y = j * 64 + 65;//What this does is set the y position of self to the tile bottom of the tile above j
-		if (self->team == ETT_flyer)
+		if (self->isFlying == 1)
 		{
 			self->directionY *= -1;//IF enemy flip their direction of movement
 		}
