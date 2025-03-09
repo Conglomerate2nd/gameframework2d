@@ -47,6 +47,18 @@ typedef struct Entity_S {
 	int						isFlying;//if 1 yes
 	EntityCollisionLayers	layer;
 	Uint8					inuse;// can make variables private 
+	int						cooldown;
+	int 					health;
+	GFC_Circle				sensor;//This can be used for things like checking proximity to player or other functions
+	
+	//CONTACTS AT MOMENT
+
+
+	int left;
+	int right;
+	int top;
+	int bottom;
+
 
 
 	
@@ -139,4 +151,8 @@ void entity_system_collision();
 * @brief this calculates gravity position and velocity.
 */
 void entityPhysicsCalc(Entity* self);
+/**
+* @bried default entity move and collision
+*/
+void entity_move(Entity* self);
 #endif

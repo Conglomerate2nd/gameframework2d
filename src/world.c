@@ -8,6 +8,9 @@
 #include "player.h"
 #include "walker.h"
 #include "flyer.h"
+#include "runner.h"
+#include "jumper.h"
+#include "runnawayer.h"
 #include "world.h"
 #include "camera.h"
 
@@ -154,27 +157,18 @@ World* world_load(const char* filename)
 			world->tileMap[i + (j * width)] = tile;
 
 			//spawn statements
-			if (world->tileMap[i + (j * width)]==7) {
-				player_new_pos(i * world->tileWidth, j * world->tileHeight);
+			//Dont know why when multiplying by tileWidth or tileHeight will leaadd to spawning in the wrong place, but haard coding works fine
+			
+
+			if (world->tileMap[i + (j * width)] == 7) {
+				player=player_new_pos(i * 64, j * 64);
 			}
 			if (world->tileMap[i + (j * width)] == 8) {
-				walker_new_pos(i * world->tileWidth, j * world->tileHeight);
+				walker_new_pos(i * 64, j * 64);
 			}
 			if (world->tileMap[i + (j * width)] == 9) {
-				flyer_new_pos(i * world->tileWidth, j * world->tileHeight);
+				runner_new_pos(i * 64, j * 64);
 			}
-			//world->tileMap[i ] = tile;
-
-			//sj_get_uint8_value(object, &world->tileMap[j * width + i]);
-
-			//bound test begin
-			/*
-			if (tile == 1) {
-				world->bounds[i + (j * width)] = gfc_rect(i * 64, j * 64, 64, 64);
-
-			}
-			*/
-			//bound test end
 		}
 
 	}
@@ -312,6 +306,8 @@ void world_draw(World* world)
 
 }
 
+
+
 void world_draw_active(World* world)
 {
 
@@ -421,6 +417,7 @@ void world_tile_collide_active(World* world, GFC_Rect bounds)
 void world_tile_collide_active_entity(World* world, Entity* self)
 {
 	int i, j, index;
+	GFC_Rect bounds;
 	//NOTE refering to world crashes, but using activeworld works.
 
 	/*
@@ -432,8 +429,10 @@ void world_tile_collide_active_entity(World* world, Entity* self)
 	{
 		for (i = 0; i < activeworld->tileWidth; i++)
 		{
-
+			
 			index = i + (j * activeworld->tileWidth);//converts position on tilemap into position in array
+			bounds = gfc_rect(i * 64, j * 64, 64, 64);
+			/*
 			if (activeworld->tileMap[index] == 0) continue;//skip this cause its empty
 
 			if (activeworld->tileMap[index] == 1)
@@ -447,6 +446,29 @@ void world_tile_collide_active_entity(World* world, Entity* self)
 
 
 			}
+
+			if (activeworld->tileMap[index] == 2)
+			{
+				//gfc_rect(i * 64, j * 64, 64, 64);
+
+				//if (gfc_rect_overlap_poc(self->bounds, gfc_rect(i * 64, j * 64, 64, 64), self->pointOfContact, self->normal)) {
+				if (gfc_rect_overlap(self->bounds, gfc_rect(i * 64, j * 64, 64, 64))) {
+					tile_2(i, j, world, self);
+				}
+
+			}
+			*/
+			if (gfc_rect_overlap(self->bounds,bounds)) {
+				switch (activeworld->tileMap[index]) {
+					case 0: break;
+					case 1:tile_1(i, j, world, self); break;
+					case 2:tile_2(i, j, world, self); break;
+					case 3:tile_3(i, j, world, self); break;
+					case 4:tile_4(i, j, world, self); break;
+					case 5:tile_5(i, j, world, self); break;
+					default:break;
+				}
+			}
 			//bound test begin
 			/*
 			if (tile == 1) {
@@ -459,7 +481,7 @@ void world_tile_collide_active_entity(World* world, Entity* self)
 
 	}
 }
-
+//try subtracting vectors
 
 void tile_1(int i, int j, World* world, Entity* self)
 {
@@ -468,7 +490,7 @@ void tile_1(int i, int j, World* world, Entity* self)
 
 	if ((self->bounds.x < i * 64) && (!((self->bounds.y + self->bounds.h > j * 64 + 64) || (self->bounds.y < j * 64))))
 	{
-		slog("on left");
+		//slog("on left");
 
 		//slog("%f x", i * 64);
 		//self->position.x = i * 64+64;
@@ -485,8 +507,7 @@ void tile_1(int i, int j, World* world, Entity* self)
 
 	if ((self->bounds.x + self->bounds.w > i * 64) && (!((self->bounds.y + self->bounds.h > j * 64 + 64) || (self->bounds.y < j * 64))))
 	{
-		slog("on right");
-
+		//slog("on right")
 		//slog("%f x", i * 64);
 		//self->position.x = i * 64;
 		self->velocity.x = 0;
@@ -541,34 +562,42 @@ void tile_2(int i, int j, World* world, Entity* self)
 
 	//Not working for full collision, perfect for one way tiles  for top or left modidfied
 
+	if ((self->bounds.x < i * 64) && (!((self->bounds.y + self->bounds.h > j * 64 + 64) || (self->bounds.y < j * 64))))
+	{
+		//slog("on left");
+
+		//slog("%f x", i * 64);
+		//self->position.x = i * 64+64;
+		self->velocity.x = 0;
+		self->position.x = i * 64 - 64;
+		if (self->team == ETT_enemy)
+		{
+			self->directionX *= -1;
+		}
+		return;//NOTE: I want the collision to check for one then pass, because we can't be colliding on multiple sidesof the same tile,
+		//if the player is colliding on the side, then they are definitely colliding with the top or bottommm
+
+	}
 
 	if ((self->bounds.x + self->bounds.w > i * 64) && (!((self->bounds.y + self->bounds.h > j * 64 + 64) || (self->bounds.y < j * 64))))
 	{
-		slog("on right");
+		//slog("on right");
 
 		//slog("%f x", i * 64);
 		//self->position.x = i * 64;
 		self->velocity.x = 0;
 		self->position.x = i * 64 + 64;
-
+		if (self->team == ETT_enemy)
+		{
+			self->directionX *= -1;//IF enemy flip their direction of movement
+		}
 		return;//NOTE: I want the collision to check for one then pass, because we can't be colliding on multiple sidesof the same tile,
 		//if the player is colliding on the side, then they are definitely colliding with the top or bottommm
 
 	}
 	//if at wall of tile, and not ontop or below same tile
 	//if that and is not there it  will push the player - use for treadmill tiles
-	if ((self->bounds.x < i * 64) && (!((self->bounds.y + self->bounds.h > j * 64 + 64) || (self->bounds.y < j * 64))))
-	{
-		slog("on left");
 
-		//slog("%f x", i * 64);
-		//self->position.x = i * 64+64;
-		self->velocity.x = 0;
-		self->position.x = i * 64 - 64;
-		return;//NOTE: I want the collision to check for one then pass, because we can't be colliding on multiple sidesof the same tile,
-		//if the player is colliding on the side, then they are definitely colliding with the top or bottommm
-
-	}
 
 
 	if ((self->bounds.y < j * 64))
@@ -578,6 +607,10 @@ void tile_2(int i, int j, World* world, Entity* self)
 
 		self->velocity.y = 0;
 		self->position.y = (j - 1) * 64;//What this does is set the y position of self to the tile bottom of the tile above j
+		if (self->isFlying == 1)
+		{
+			self->directionY *= -1;//IF enemy flip their direction of movement
+		}
 		return;
 	}
 
@@ -588,7 +621,147 @@ void tile_2(int i, int j, World* world, Entity* self)
 		self->velocity.y = 0;
 		//Move to +1 below the tile so player does not stick and will fall affected by gravity
 		self->position.y = j * 64 + 65;//What this does is set the y position of self to the tile bottom of the tile above j
+		if (self->isFlying == 1)
+		{
+			self->directionY *= -1;//IF enemy flip their direction of movement
+		}
 		return;
 	}
 
 }
+
+
+
+
+void tile_3(int i, int j, World* world, Entity* self)
+{
+
+	//ONE WAY ON RIGHT
+	if ((self->bounds.x + self->bounds.w > i * 64) && (!((self->bounds.y + self->bounds.h > j * 64 + 64) || (self->bounds.y < j * 64))))
+	{
+		//slog("on right");
+
+		//slog("%f x", i * 64);
+		//self->position.x = i * 64;
+		self->velocity.x = 0;
+		self->position.x = i * 64 + 64;
+		if (self->team == ETT_enemy)
+		{
+			self->directionX *= -1;//IF enemy flip their direction of movement
+		}
+		return;//NOTE: I want the collision to check for one then pass, because we can't be colliding on multiple sidesof the same tile,
+		//if the player is colliding on the side, then they are definitely colliding with the top or bottommm
+
+	}
+	//if at wall of tile, and not ontop or below same tile
+	//if that and is not there it  will push the player - use for treadmill tiles
+
+}
+
+void tile_4(int i, int j, World* world, Entity* self) {
+	self->directionY = -1;
+	self->acceleration.y = -.5;
+}
+
+void tile_5(int i, int j, World* world, Entity* self) {
+	self->directionY = 1;
+	self->acceleration.y = .5;
+}
+
+//TODO : SET EACH EDGE CHECK AS A NEW SEPERATE FUNCTION, TILE THREE HAS PERFECT COLLISION, but is one way on right
+//IF EDGE() only check for left and calc
+
+void oneWayRight(int i, int j, World* world, Entity* self)
+{
+
+	//ONE WAY ON RIGHT
+	if ((self->bounds.x + self->bounds.w > i * 64) && (!((self->bounds.y + self->bounds.h > j * 64 + 64) || (self->bounds.y < j * 64))))
+	{
+		//slog("on right");
+
+		//slog("%f x", i * 64);
+		//self->position.x = i * 64;
+		self->velocity.x = 0;
+		self->position.x = i * 64 + 64;
+		if (self->team == ETT_enemy)
+		{
+			self->directionX *= -1;//IF enemy flip their direction of movement
+		}
+		return;//NOTE: I want the collision to check for one then pass, because we can't be colliding on multiple sidesof the same tile,
+		//if the player is colliding on the side, then they are definitely colliding with the top or bottommm
+
+	}
+	//if at wall of tile, and not ontop or below same tile
+	//if that and is not there it  will push the player - use for treadmill tiles
+}
+
+void oneWayLeft(int i, int j, World* world, Entity* self)
+{
+
+	if ((self->bounds.x < i * 64) && (!((self->bounds.y + self->bounds.h > j * 64 + 64) || (self->bounds.y < j * 64))))
+	{
+		//slog("on left");
+
+		//slog("%f x", i * 64);
+		//self->position.x = i * 64+64;
+		self->velocity.x = 0;
+		self->position.x = i * 64 - 64;
+		if (self->team == ETT_enemy)
+		{
+			self->directionX *= -1;
+		}
+		return;//NOTE: I want the collision to check for one then pass, because we can't be colliding on multiple sidesof the same tile,
+		//if the player is colliding on the side, then they are definitely colliding with the top or bottommm
+
+	}
+	//if at wall of tile, and not ontop or below same tile
+	//if that and is not there it  will push the player - use for treadmill tiles
+}
+
+void oneWayTop(int i, int j, World* world, Entity* self)
+{
+
+	if ((self->bounds.y < j * 64))
+	{
+		//self->position.y = j * 64;
+		//slog("on top");
+
+		self->velocity.y = 0;
+		self->position.y = (j - 1) * 64;//What this does is set the y position of self to the tile bottom of the tile above j
+		if (self->isFlying == 1)
+		{
+			self->directionY *= -1;//IF enemy flip their direction of movement
+		}
+		return;
+	}
+	//if at wall of tile, and not ontop or below same tile
+	//if that and is not there it  will push the player - use for treadmill tiles
+}
+
+void oneWayBottom(int i, int j, World* world, Entity* self)
+{
+
+	if ((self->bounds.y + self->bounds.h > j * 64 + 64))
+	{
+		//slog("on bottom");
+		//self->position.y = j * 64 + 64;
+		self->velocity.y = 0;
+		//Move to +1 below the tile so player does not stick and will fall affected by gravity
+		self->position.y = j * 64 + 65;//What this does is set the y position of self to the tile bottom of the tile above j
+		if (self->isFlying == 1)
+		{
+			self->directionY *= -1;//IF enemy flip their direction of movement
+		}
+		return;
+	}
+}
+
+//TODO
+// This might work.
+//IF TILE ABOVE IS NOT 0 - collide using top collision
+
+//IF TILE BELOW IS NOT 0 - collide using bottom collision
+
+//IF TILE RIGHT IS NOT 0 - collide using right collision
+
+//IF TILE LEFT IS NOT 0 - collide using left collision

@@ -2,7 +2,9 @@
 #include "simple_logger.h"
 #include "gfc_input.h"
 #include "gf2d_graphics.h"
+#include "gf2d_draw.h"
 #include "gfc_shape.h"
+#include "gfc_vector.h"
 #include "gf2d_sprite.h"
 
 #include "entity.h"
@@ -19,16 +21,16 @@ int main(int argc, char * argv[])
     screen.y = 720;
     /*variable declarations*/
     int done = 0;
+
     const Uint8 * keys;
     //Sprite *sprite;
     //World *world;
-    //gfc_input_init("input.cfg");
     int mx,my;
     float mf = 0;
     Sprite *mouse;
     GFC_Color mouseGFC_Color = gfc_color8(0,100,255,200);
     
-    Entity* player;// not necessary, can be declared at definition, but helps readability
+    //Entity* player;// not necessary, can be declared at definition, but helps readability
     
     /*program initializtion*/
     init_logger("gf2d.log",0);
@@ -41,6 +43,7 @@ int main(int argc, char * argv[])
         720,
         gfc_vector4d(0,0,0,255),
         0);
+    //gfc_input_init("input.cfg");
     gf2d_graphics_set_frame_delay(16);
     gf2d_sprite_init(1024);
     entity_system_init(100);//Very low ball number
@@ -51,7 +54,7 @@ int main(int argc, char * argv[])
     //sprite = gf2d_sprite_load_image("images/backgrounds/test.png");
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
 
-    //player = player_new();
+    //player = player_new_pos(384,384);
     world_load("maps/world.map");
     //Hardcode Test
     //Entity* walk = walker_new_pos(128, 128);
@@ -104,6 +107,8 @@ int main(int argc, char * argv[])
                 &mouseGFC_Color,
                 (int)mf);
 
+
+            //gf2d_draw_rect_filled(GFC_Rect rect, GFC_Color color);
         gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
         
 

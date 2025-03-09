@@ -54,11 +54,17 @@ void world_tile_collide(World* world, GFC_Rect bounds);
 
 static World* activeworld = NULL;
 
-/**
+/** 
 * @brief checks for collision across tiles
 * @param world checked against
 */
 void world_draw_active(World* world);
+
+/**
+* @brief draws bounds to see
+* @param world checked against
+*/
+void world_draw_bounds(World* world);
 
 /**
 * @brief sets up world camera
@@ -71,6 +77,12 @@ void world_setup_camera(World* world);
 */
 void world_tile_collide_active(World* world, GFC_Rect bounds);
 
+
+/**
+* @brief checks for collision across tiles
+* @param world, while not necessarry, helps readability and efficiency
+*/
+void world_tile_collide_active_entity(World* world, Entity* self);
 /**
 * @brief each function dictates what each tile under a number should do
 * @param i and j are counting variables from the original function. these are the same for readability
@@ -99,5 +111,7 @@ void world_tile_collide_active(World* world, GFC_Rect bounds);
 */
 void tile_1(int i, int j, World* world, Entity* self);
 void tile_2(int i, int j, World* world, Entity* self);
-
+void tile_3(int i, int j, World* world, Entity* self);
+void tile_4(int i, int j, World* world, Entity* self);
+void tile_5(int i, int j, World* world, Entity* self);
 #endif

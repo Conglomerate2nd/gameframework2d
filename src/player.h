@@ -2,7 +2,7 @@
 #define __PLAYER_H__
 
 #include "entity.h"
-
+static Entity* player = NULL;
 
 /**
 * @brief creates a new player
@@ -16,4 +16,6 @@ Entity* player_new();
 * @return  returns a pointer to the new player returns null on failure
 */
 Entity* player_new_pos(int x, int y);
+Entity* player_get();
+
 #endif

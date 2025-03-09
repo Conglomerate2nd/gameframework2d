@@ -57,13 +57,14 @@ Entity* player_new()
 	self->update = playerUpdate;
 	self->free = playerFree;
 
-
+	self->directionY = 1;
 
 	return self;
 }
 
 Entity* player_new_pos(int x,int y)
 {
+
 	Entity* self;
 	self = entity_new();
 
@@ -93,6 +94,7 @@ Entity* player_new_pos(int x,int y)
 	);
 	self->frame = 0;
 	self->acceleration.y = .5;
+	slog("%i x,%i y player spawn", x, y);
 	self->position = gfc_vector2d(x, y);
 
 	//setting the  offset by 64 seems to work well with the bounds, but needs more testing as sprite is 128*128 pixels
@@ -101,12 +103,12 @@ Entity* player_new_pos(int x,int y)
 
 	self->bounds = gfc_rect(self->position.x + self->offset.x, self->position.y + self->offset.y, 64, 64);
 
-
+	self->directionY = 1;
 	self->think = playerThink;
 	self->update = playerUpdate;
 	self->free = playerFree;
-
-
+	self->health = 5;
+	gfc_input_init("input.cfg");
 
 	return self;
 }
@@ -118,7 +120,11 @@ void playerThink(Entity* self)
 	keys = SDL_GetKeyboardState(NULL);
 	if (!self)return;
 
-	
+	self->bounds = gfc_rect(self->position.x, self->position.y, 64, 64);
+	//slog("in player");
+	world_tile_collide_active_entity(activeworld, self);
+
+	/*
 	
 	if (keys[SDL_SCANCODE_A]){
 		//slog("here Left");
@@ -135,9 +141,33 @@ void playerThink(Entity* self)
 		self->position.y += -15;
 	}
 	else self->velocity.y = self->velocity.y;
+	*/
 
-
+	gfc_input_update();
+	if (gfc_input_command_down("left")){
+		//slog("here Left");
+		self->velocity.x = -3;
+	}
+	else if (gfc_input_command_down("right")) {
+		//slog("here Right");
+		self->velocity.x = 3;
+	}
+	else self->velocity.x = 0;
+	/*
+	if (cooldown == 0) {
+		self->velocity.y -= 20;
+		cooldown = 100;
+	}
+	else cooldown--;
+	*/
+	if (gfc_input_command_down("jump")) {
+		//slog("%f velocity y", self->velocity.y);
+		//self->position.y += -15*self->directionY;
+		self->position.y += -15;
+	}
+	else self->velocity.y = self->velocity.y;
 	
+
 	/*
 	if (keys[SDL_SCANCODE_S]){
 		//slog("here Down");
@@ -185,6 +215,14 @@ void playerUpdate(Entity* self)
 	if(!self)return;
 	//entityAnimate(self);//Uncomment to animate
 	
+	/*
+	for (int i = 0; i < player->health; i++) {
+		slog("in here");
+		GFC_Rect healthBar = gfc_rect(128 + (i * 64), 128, 64, 64);
+
+		gf2d_draw_shape(gfc_shape_from_rect(healthBar), GFC_COLOR_RED, gfc_vector2d(0, 0));
+	}
+	*/
 
 	camera_ceneter_at(self->position);
 }
@@ -221,12 +259,33 @@ void playerPhysicsCalc(Entity* self) {
 	if (self->velocity.y > 30) {
 		self->velocity.y = 30;
 	}
-	
-	//for gravity 
 
+	/*
+	int x = (int)(self->position.x/64);
+	int y = (int)(self->position.y+64);
+
+	//ESSENTIALLY self->position.x and divide by 64 to get x position in array
+	slog("did it work");
+	if (activeworld->tileMap[x + y] == 0|| activeworld->tileMap[x + y + y]==NULL) {
+		self->velocity.y = -10;
+	}
+	slog(" it did");
+	//for gravity 
+	*/
 
 
 	//self->acceleration.y = self->gravity;
 	//gfc_vector2d_add(self->velocity, self->velocity, self->acceleration);
 
+	//IF TILE(ABOVE) is 1 push down if 2 dont
+
+}
+
+Entity *player_get(){
+	if (!player) {
+		slog("no player to return");
+		return;
+	}
+
+	return &player;
 }

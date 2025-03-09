@@ -142,7 +142,8 @@ void entityDraw(Entity* self)
 	//gfc_vector2d_add(drawAtOffset, self->position, self->offset);
 	offset = camera_get_offset();
 	gfc_vector2d_add(position, self->position,offset);
-
+	
+	//gf2d_draw_circle(position, 64, GFC_COLOR_BLUE);
 	gf2d_sprite_render(
 		self->sprite,
 		position,
@@ -191,7 +192,7 @@ int entity_collision(Entity* self, Entity* other)
 
 	gfc_rect_copy(bounds1, self->bounds);
 	gfc_rect_copy(bounds2, other->bounds);
-
+	 
 	
 	return gfc_rect_overlap(bounds1, bounds2);
 }
@@ -250,6 +251,7 @@ void entity_system_collision()
 			{
 				//slog("colliding");
 				//THIS WORKS
+				//TODO FIGURE OUT HOW TO USE THIS TO RUN FUNCTIONS WITHIN AN ENTITY
 			}
 
 			entity_collision(&_entManager.entityList[i], &_entManager.entityList[j]);
@@ -292,3 +294,18 @@ void entityPhysicsCalc(Entity* self) {
 	//gfc_vector2d_add(self->velocity, self->velocity, self->acceleration);
 
 }
+
+/*
+void entity_move(Entity* self) {
+	GFC_Shape  bounds;
+	GFC_Vector2D position;
+	if (!self)return;
+	gfc_vector2d_add(position, self->position, self->velocity);
+	gfc_vector2d_add(self->velocity, self->velocity, self->acceleration);
+	bounds = gfc_shape_from_rect(self->bounds);
+	gfc_shape_move(&bounds, position);
+	//if we had layers enclose everything here
+	if(!world_test_shape)
+}
+
+*/

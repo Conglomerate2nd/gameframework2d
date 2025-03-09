@@ -8,7 +8,7 @@ void walkerThink(Entity* self);
 void walkerUpdate(Entity* self);
 void walkerFree(Entity* self);
 
-int sign = 1;
+
 
 Entity* walker_new()
 {
