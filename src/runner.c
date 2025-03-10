@@ -112,15 +112,16 @@ void runnerThink(Entity* self)
 	{
 		//slog("RUNNER senor 1");
 		//slog("%f target position.x",target->position.x);
+		//pretty much the same as a point within radius of 384
 		if (gfc_vector2d_distance_between_less_than(target->position, self->position,384)) {
 			//Player on right
 			//slog("RUNNER senor");
 			if (target->position.x > self->position.x) {
-				self->velocity.x = 1;
+				self->velocity.x = 1.5;
 			}
 			//Player on left
 			if (target->position.x < self->position.x) {
-				self->velocity.x = -1;
+				self->velocity.x = -1.5;
 			}
 		}
 		else self->velocity.x = 0;

@@ -167,7 +167,7 @@ World* world_load(const char* filename)
 				walker_new_pos(i * 64, j * 64);
 			}
 			if (world->tileMap[i + (j * width)] == 9) {
-				runner_new_pos(i * 64, j * 64);
+				runnawayer_new_pos(i * 64, j * 64);
 			}
 		}
 
