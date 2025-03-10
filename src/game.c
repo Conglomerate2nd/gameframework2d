@@ -46,7 +46,7 @@ int main(int argc, char * argv[])
     //gfc_input_init("input.cfg");
     gf2d_graphics_set_frame_delay(16);
     gf2d_sprite_init(1024);
-    entity_system_init(100);//Very low ball number
+    entity_system_init(1000);//Very low ball number
     SDL_ShowCursor(SDL_DISABLE);
     camera_set_size(screen);
     

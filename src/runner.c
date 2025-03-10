@@ -9,8 +9,7 @@
 void runnerThink(Entity* self);
 void runnerUpdate(Entity* self);
 void runnerFree(Entity* self);
-
-Entity* target; 
+ 
 
 Entity* runner_new()
 {
@@ -49,7 +48,7 @@ Entity* runner_new()
 	self->update = runnerUpdate;
 	self->free = runnerFree;
 	
-	Entity* target = player_get();
+	//Entity* target = player_get();
 
 	return self;
 }
@@ -57,6 +56,7 @@ Entity* runner_new()
 
 Entity* runner_new_pos(int x, int y)
 {
+	Entity* target;
 	//SJson *json = sj_load("src/entity.cfg");
 	Entity* self;
 	self = entity_new();
@@ -94,34 +94,38 @@ Entity* runner_new_pos(int x, int y)
 	self->free = runnerFree;
 	self->team = ETT_enemy;
 	self->directionX = 1;//walke foward first
-	self->center.x = self->position.x - 64;
-	self->center.y = self->position.y / 2;
-	self->sensor = gfc_circle(self->center.x, self->center.y, 64);
-	target = player_get();
+	self->center.x = self->position.x + 32;
+	self->center.y = self->position.y + 32;
+	self->sensor = gfc_circle(self->center.x, self->center.y, 200);
+	target = entity_player_get();
 	return self;
 }
 
 
 void runnerThink(Entity* self)
 {
-	//will not go through code until player is initialized 
-		//slog("RUNNER THINK");
-
-	if (player != NULL)
+	
+	Entity* target;
+	if (!self)return;
+	target = entity_player_get();
+	if (target)
 	{
-		slog("RUNNER senor 1");
-		if (gfc_point_in_cicle(target->position, self->sensor)) {
+		//slog("RUNNER senor 1");
+		//slog("%f target position.x",target->position.x);
+		if (gfc_vector2d_distance_between_less_than(target->position, self->position,384)) {
 			//Player on right
-			slog("RUNNER senor");
+			//slog("RUNNER senor");
 			if (target->position.x > self->position.x) {
-				self->velocity.x = 3;
+				self->velocity.x = 1;
 			}
 			//Player on left
 			if (target->position.x < self->position.x) {
-				self->velocity.x = -3;
+				self->velocity.x = -1;
 			}
 		}
+		else self->velocity.x = 0;
 	}
+	
 		gf2d_draw_circle(self->position, self->sensor.r, GFC_COLOR_BLUE);
 		entityPhysicsCalc(self);
 		self->bounds = gfc_rect(self->position.x, self->position.y, 64, 64);

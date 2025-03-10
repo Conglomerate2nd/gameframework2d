@@ -155,4 +155,9 @@ void entityPhysicsCalc(Entity* self);
 * @bried default entity move and collision
 */
 void entity_move(Entity* self);
+
+/**
+* @brief return player
+*/
+Entity* entity_player_get();
 #endif

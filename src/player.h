@@ -2,7 +2,7 @@
 #define __PLAYER_H__
 
 #include "entity.h"
-static Entity* player = NULL;
+
 
 /**
 * @brief creates a new player

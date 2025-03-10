@@ -143,7 +143,8 @@ void entityDraw(Entity* self)
 	offset = camera_get_offset();
 	gfc_vector2d_add(position, self->position,offset);
 	
-	//gf2d_draw_circle(position, 64, GFC_COLOR_BLUE);
+	
+	
 	gf2d_sprite_render(
 		self->sprite,
 		position,
@@ -309,3 +310,18 @@ void entity_move(Entity* self) {
 }
 
 */
+
+Entity *entity_player_get()
+{
+	int i;
+
+	for (i = 0; i < _entManager.entityMax; i++)
+	{
+		if (_entManager.entityList[i].team == ETT_player) {
+			//slog("player found");
+			return &_entManager.entityList[i];
+		}
+	}
+	slog("Failed to find player");
+	return NULL;
+}

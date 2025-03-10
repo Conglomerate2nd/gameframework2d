@@ -161,7 +161,7 @@ World* world_load(const char* filename)
 			
 
 			if (world->tileMap[i + (j * width)] == 7) {
-				player=player_new_pos(i * 64, j * 64);
+				player_new_pos(i * 64, j * 64);
 			}
 			if (world->tileMap[i + (j * width)] == 8) {
 				walker_new_pos(i * 64, j * 64);
@@ -466,6 +466,7 @@ void world_tile_collide_active_entity(World* world, Entity* self)
 					case 3:tile_3(i, j, world, self); break;
 					case 4:tile_4(i, j, world, self); break;
 					case 5:tile_5(i, j, world, self); break;
+					case 6:tile_6(i, j, world, self); break;
 					default:break;
 				}
 			}
@@ -667,6 +668,11 @@ void tile_5(int i, int j, World* world, Entity* self) {
 	self->directionY = 1;
 	self->acceleration.y = .5;
 }
+void tile_6(int i, int j, World* world, Entity* self) {
+	slog("hazard hit");
+	entity_free(self);
+}
+
 
 //TODO : SET EACH EDGE CHECK AS A NEW SEPERATE FUNCTION, TILE THREE HAS PERFECT COLLISION, but is one way on right
 //IF EDGE() only check for left and calc

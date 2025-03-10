@@ -56,7 +56,7 @@ Entity* player_new()
 	self->think = playerThink;
 	self->update = playerUpdate;
 	self->free = playerFree;
-
+	self->team = ETT_player;
 	self->directionY = 1;
 
 	return self;
@@ -108,10 +108,59 @@ Entity* player_new_pos(int x,int y)
 	self->update = playerUpdate;
 	self->free = playerFree;
 	self->health = 5;
+	self->team = ETT_player;
 	gfc_input_init("input.cfg");
-
+	
 	return self;
 }
+
+/*
+Entity* player_new_global_pos(int x, int y)
+{
+
+	Entity* self;
+	self = entity_new();
+
+	if (!self)
+	{
+		slog("Failed to create new player");
+		return NULL;
+	}
+
+
+	//can all be defined either here through hard coding or by using a json file
+
+	
+
+	//to gt frame dimensions ddivide image dimensions by number of frames. 
+	player->sprite = gf2d_sprite_load_all(
+		"images/Sprites/gobblo.png",
+		64,
+		64,
+		NULL,
+		0
+	);
+	player->frame = 0;
+	player->acceleration.y = .5;
+	slog("%i x,%i y player spawn", x, y);
+	player->position = gfc_vector2d(x, y);
+
+	//setting the  offset by 64 seems to work well with the bounds, but needs more testing as sprite is 128*128 pixels
+	player->offset.y = 0;
+	player->offset.x = 0;
+
+	player->bounds = gfc_rect(player->position.x + player->offset.x, player->position.y + player->offset.y, 64, 64);
+
+	player->directionY = 1;
+	player->think = playerThink;
+	player->update = playerUpdate;
+	player->free = playerFree;
+	player->health = 5;
+	gfc_input_init("input.cfg");
+
+	return player;
+}
+*/
 
 void playerThink(Entity* self)
 {
@@ -281,11 +330,3 @@ void playerPhysicsCalc(Entity* self) {
 
 }
 
-Entity *player_get(){
-	if (!player) {
-		slog("no player to return");
-		return;
-	}
-
-	return &player;
-}
