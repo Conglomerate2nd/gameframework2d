@@ -29,8 +29,8 @@ int main(int argc, char * argv[])
     float mf = 0;
     Sprite *mouse;
     GFC_Color mouseGFC_Color = gfc_color8(0,100,255,200);
-    
-    //Entity* player;// not necessary, can be declared at definition, but helps readability
+    GFC_Rect rectBar;
+    Entity player;// not necessary, can be declared at definition, but helps readability
     
     /*program initializtion*/
     init_logger("gf2d.log",0);
@@ -53,7 +53,7 @@ int main(int argc, char * argv[])
     /*demo setup*/
     //sprite = gf2d_sprite_load_image("images/backgrounds/test.png");
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
-
+    
     //player = player_new_pos(384,384);
     world_load("maps/world.map");
     //Hardcode Test
@@ -73,6 +73,8 @@ int main(int argc, char * argv[])
         SDL_GetMouseState(&mx,&my);
         mf+=0.1;
         if (mf >= 16.0)mf = 0;
+
+       
 
         /*
         * Entity and Update Begin
@@ -107,8 +109,13 @@ int main(int argc, char * argv[])
                 &mouseGFC_Color,
                 (int)mf);
 
-
-            //gf2d_draw_rect_filled(GFC_Rect rect, GFC_Color color);
+            if (entity_player_get()->health <= 0) {
+                slog("no health");
+            }
+            for (int i = 0; i < entity_player_get()->health; i++) {
+                rectBar = gfc_rect(i * 32+32, 32, 32, 32);
+                gf2d_draw_rect_filled(rectBar,GFC_COLOR_RED);
+            }
         gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
         
 

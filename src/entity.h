@@ -65,6 +65,7 @@ typedef struct Entity_S {
 	void (*think)(struct Entity_S* self);// For making decisions
 	void (*update)(struct Entity_S* self);//execute decisions
 	void (*free)(struct Entity_S* self);//Destroy Self
+	void (*damage)(struct Entity_S* self);//Destroy Self
 	void* data;//for ad hoc addition data for entity
 				//Data is the example format for adding anything
 	
@@ -160,4 +161,6 @@ void entity_move(Entity* self);
 * @brief return player
 */
 Entity* entity_player_get();
+EntityTeamType get_team_type(Entity* self);
+void damageSelf(Entity* self);
 #endif

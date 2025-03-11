@@ -11,6 +11,7 @@
 #include "runner.h"
 #include "jumper.h"
 #include "runnawayer.h"
+#include "boss.h"
 #include "world.h"
 #include "camera.h"
 
@@ -167,7 +168,7 @@ World* world_load(const char* filename)
 				walker_new_pos(i * 64, j * 64);
 			}
 			if (world->tileMap[i + (j * width)] == 9) {
-				runnawayer_new_pos(i * 64, j * 64);
+				boss_new_pos(i * 64, j * 64);
 			}
 		}
 

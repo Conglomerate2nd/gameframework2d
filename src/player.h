@@ -17,5 +17,7 @@ Entity* player_new();
 */
 Entity* player_new_pos(int x, int y);
 Entity* player_get();
+void playerFree(Entity* self);
+void playerDamageSelf(Entity* self);
 
 #endif

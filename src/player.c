@@ -10,7 +10,7 @@ void playerThink(Entity* self);
 void playerUpdate(Entity* self);
 void playerFree(Entity* self);
 void playerPhysicsCalc(Entity* self);
-
+void playerDamageSelf(Entity* self);
 
 
 Entity* player_new() 
@@ -56,6 +56,7 @@ Entity* player_new()
 	self->think = playerThink;
 	self->update = playerUpdate;
 	self->free = playerFree;
+	self->damage = playerDamageSelf;
 	self->team = ETT_player;
 	self->directionY = 1;
 
@@ -330,3 +331,7 @@ void playerPhysicsCalc(Entity* self) {
 
 }
 
+void playerDamageSelf(Entity* self) {
+	slog("damage");
+	self->health--;
+}

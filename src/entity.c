@@ -253,6 +253,11 @@ void entity_system_collision()
 				//slog("colliding");
 				//THIS WORKS
 				//TODO FIGURE OUT HOW TO USE THIS TO RUN FUNCTIONS WITHIN AN ENTITY
+				if ((get_team_type(&_entManager.entityList[i]) == ETT_player) || (get_team_type(&_entManager.entityList[j]) == ETT_player))
+				{
+					//slog("player hit");
+					damageSelf(entity_player_get());
+				}
 			}
 
 			entity_collision(&_entManager.entityList[i], &_entManager.entityList[j]);
@@ -324,4 +329,13 @@ Entity *entity_player_get()
 	}
 	slog("Failed to find player");
 	return NULL;
+}
+
+EntityTeamType get_team_type(Entity* self) {
+	return self->team;
+}
+
+void damageSelf(Entity* self) {
+	slog("damage");
+	self->health--;
 }
