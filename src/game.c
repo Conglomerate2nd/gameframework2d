@@ -108,13 +108,16 @@ int main(int argc, char * argv[])
                 NULL,
                 &mouseGFC_Color,
                 (int)mf);
-
-            if (entity_player_get()->health <= 0) {
-                slog("no health");
-            }
-            for (int i = 0; i < entity_player_get()->health; i++) {
-                rectBar = gfc_rect(i * 32+32, 32, 32, 32);
-                gf2d_draw_rect_filled(rectBar,GFC_COLOR_RED);
+            
+            if(entity_player_get())
+            {
+                if (entity_player_get()->health <= 0) {
+                    // slog("no health");
+                }
+                for (int i = 0; i < entity_player_get()->health; i++) {
+                    rectBar = gfc_rect(i * 32 + 32, 32, 32, 32);
+                    gf2d_draw_rect_filled(rectBar, GFC_COLOR_RED);
+                }
             }
         gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
         

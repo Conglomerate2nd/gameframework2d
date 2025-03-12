@@ -332,6 +332,6 @@ void playerPhysicsCalc(Entity* self) {
 }
 
 void playerDamageSelf(Entity* self) {
-	slog("damage");
+	//slog("damage");
 	self->health--;
 }

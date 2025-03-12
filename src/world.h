@@ -115,4 +115,8 @@ void tile_3(int i, int j, World* world, Entity* self);
 void tile_4(int i, int j, World* world, Entity* self);
 void tile_5(int i, int j, World* world, Entity* self);
 void tile_6(int i, int j, World* world, Entity* self);
+void tile_7(int i, int j, World* world, Entity* self);
+void tile_8(int i, int j, World* world, Entity* self);
+void tile_9(int i, int j, World* world, Entity* self);
+void tile_10(int i, int j, World* world, Entity* self);
 #endif

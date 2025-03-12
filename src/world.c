@@ -161,13 +161,13 @@ World* world_load(const char* filename)
 			//Dont know why when multiplying by tileWidth or tileHeight will leaadd to spawning in the wrong place, but haard coding works fine
 			
 
-			if (world->tileMap[i + (j * width)] == 7) {
+			if (world->tileMap[i + (j * width)] == 17) {
 				player_new_pos(i * 64, j * 64);
 			}
-			if (world->tileMap[i + (j * width)] == 8) {
+			if (world->tileMap[i + (j * width)] == 18) {
 				walker_new_pos(i * 64, j * 64);
 			}
-			if (world->tileMap[i + (j * width)] == 9) {
+			if (world->tileMap[i + (j * width)] == 19) {
 				boss_new_pos(i * 64, j * 64);
 			}
 		}
@@ -468,6 +468,10 @@ void world_tile_collide_active_entity(World* world, Entity* self)
 					case 4:tile_4(i, j, world, self); break;
 					case 5:tile_5(i, j, world, self); break;
 					case 6:tile_6(i, j, world, self); break;
+					case 7:tile_7(i, j, world, self); break;
+					case 8:tile_8(i, j, world, self); break;
+					case 9:tile_9(i, j, world, self); break;
+					case 10:tile_10(i, j, world, self); break;
 					default:break;
 				}
 			}
@@ -667,13 +671,110 @@ void tile_4(int i, int j, World* world, Entity* self) {
 
 void tile_5(int i, int j, World* world, Entity* self) {
 	self->directionY = 1;
-	self->acceleration.y = .5;
+	self->acceleration.y = .5;//Default  Gravity
 }
 void tile_6(int i, int j, World* world, Entity* self) {
 	slog("hazard hit");
-	entity_free(self);
+	//entity_free(self);
+	damageSelf(entity_player_get());
 }
 
+void tile_7(int i, int j, World* world, Entity* self) {
+	self->directionY = -1;
+	self->acceleration.y = .15;
+}
+
+void tile_8(int i, int j, World* world, Entity* self) {
+	self->directionY = 1;
+	self->acceleration.y = 2;
+}
+
+
+void tile_9(int i, int j, World* world, Entity* self)
+{
+
+	//Not working for full collision, perfect for one way tiles  for top or left modidfied
+
+
+	if (self->bounds.x + self->bounds.w > i * 64)
+	{
+		//slog("on right");
+
+		//slog("%f x", i * 64);
+		//self->position.x = i * 64;
+		self->velocity.x = 0;
+		self->position.x = i * 64 + 64;
+		if (self->team == ETT_enemy)
+		{
+			self->directionX *= -1;//IF enemy flip their direction of movement
+		}
+		return;//NOTE: I want the collision to check for one then pass, because we can't be colliding on multiple sidesof the same tile,
+		//if the player is colliding on the side, then they are definitely colliding with the top or bottommm
+
+	}
+	//if at wall of tile, and not ontop or below same tile
+	//if that and is not there it  will push the player - use for treadmill tiles
+
+
+
+	if ((self->bounds.y < j * 64))
+	{
+		//self->position.y = j * 64;
+		//slog("on top");
+
+		self->velocity.y = 0;
+		self->position.y = (j - 1) * 64;//What this does is set the y position of self to the tile bottom of the tile above j
+		if (self->isFlying == 1)
+		{
+			self->directionY *= -1;//IF enemy flip their direction of movement
+		}
+		return;
+	}
+
+}
+
+
+void tile_10(int i, int j, World* world, Entity* self)
+{
+
+	//Not working for full collision, perfect for one way tiles  for top or left modidfied
+
+	if (self->bounds.x < i * 64) 
+	{
+		//slog("on left");
+
+		//slog("%f x", i * 64);
+		//self->position.x = i * 64+64;
+		self->velocity.x = 0;
+		self->position.x = i * 64 - 64;
+		if (self->team == ETT_enemy)
+		{
+			self->directionX *= -1;
+		}
+		return;//NOTE: I want the collision to check for one then pass, because we can't be colliding on multiple sidesof the same tile,
+		//if the player is colliding on the side, then they are definitely colliding with the top or bottommm
+
+	}
+	//if at wall of tile, and not ontop or below same tile
+	//if that and is not there it  will push the player - use for treadmill tiles
+
+
+
+	if ((self->bounds.y < j * 64))
+	{
+		//self->position.y = j * 64;
+		//slog("on top");
+
+		self->velocity.y = 0;
+		self->position.y = (j - 1) * 64;//What this does is set the y position of self to the tile bottom of the tile above j
+		if (self->isFlying == 1)
+		{
+			self->directionY *= -1;//IF enemy flip their direction of movement
+		}
+		return;
+	}
+
+}
 
 //TODO : SET EACH EDGE CHECK AS A NEW SEPERATE FUNCTION, TILE THREE HAS PERFECT COLLISION, but is one way on right
 //IF EDGE() only check for left and calc
