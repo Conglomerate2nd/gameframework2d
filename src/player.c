@@ -174,24 +174,7 @@ void playerThink(Entity* self)
 	//slog("in player");
 	world_tile_collide_active_entity(activeworld, self);
 
-	/*
 	
-	if (keys[SDL_SCANCODE_A]){
-		//slog("here Left");
-		self->velocity.x = -3;
-	}
-	else if (keys[SDL_SCANCODE_D]){
-		//slog("here Right");
-		self->velocity.x = 3;
-	}
-	else self->velocity.x = 0;
-
-	if (keys[SDL_SCANCODE_SPACE]) {
-		//slog("%f velocity y", self->velocity.y);
-		self->position.y += -15;
-	}
-	else self->velocity.y = self->velocity.y;
-	*/
 
 	gfc_input_update();
 
@@ -210,12 +193,14 @@ void playerThink(Entity* self)
 
 	//**TESTING ATTENTIION PLEASE**//
 
-	
-	if (gfc_input_command_down("left") && get_tile_left(self->position.x+62,self->position.y) != 1){
-	 self->velocity.x = -3;
+	//Why +60? - TO CREATE a pixel gap between the left collision, avoiding edge cases, 63 and 64 have edge cases.
+	if (gfc_input_command_down("left") && get_tile_left(self->position.x+60,self->position.y) != 1){
+		self->velocity.x = -3;
+		//self->position.x -= 15;
 	}
 	else if (gfc_input_command_down("right")&&get_tile_right(self->position.x, self->position.y)!=1) {
 		 self->velocity.x = 3;
+		//self->position.x += 15;
 	}
 	else self->velocity.x = 0;
 	
@@ -231,33 +216,15 @@ void playerThink(Entity* self)
 
 		//slog("%f velocity y", self->velocity.y);
 		//self->position.y += -15*self->directionY;
-		if(get_tile_above(self->position.x,self->position.y)==0)
-		self->position.y += -15;
+		if (get_tile_above(self->position.x, self->position.y + 62) == 0)
+		{
+			self->position.y += -15;
+		}
+		
 	}
 	else self->velocity.y = self->velocity.y;
 	
 
-	/*
-	if (keys[SDL_SCANCODE_S]){
-		//slog("here Down");
-		self->velocity.y += 3;
-	}
-	else if (keys[SDL_SCANCODE_W]){
-		//slog("here Up");
-		self->velocity.y = -3;
-	}
-	else self->velocity.y = 0;//eliminate this line for gravity
-	*/
-
-	/*  TEST FOR FOLLOW MOuse
-	Sint32 mx = 0, my = 0;
-	SDL_GetMouseState(&mx, &my);
-	if (self->position.x < mx)dir.x = 1;
-	if (self->position.y < my)dir.y = 1;
-	if (self->position.x > mx)dir.x = -1;
-	if (self->position.y > my)dir.y = -1;
-	*/
-	
 	playerPhysicsCalc(self);
 
 	gfc_vector2d_normalize(&dir);
@@ -315,7 +282,7 @@ void playerPhysicsCalc(Entity* self) {
 	//velocity = velocity + (acceleration + gravity ) * time for y
 	
 	//X AXIS
-	if (get_tile_right(self->position.x, self->position.y) != 1 || get_tile_left(self->position.x, self->position.y) != 1) {
+	if (get_tile_right(self->position.x, self->position.y) != 1 || get_tile_left(self->position.x+62, self->position.y) != 1) {
 		self->position.x += self->velocity.x;
 		self->velocity.x += self->acceleration.x;
 	}
@@ -358,3 +325,15 @@ void playerDamageSelf(Entity* self) {
 	//slog("damage");
 	self->health--;
 }
+
+int isJumpValid(Entity* self) {
+	return self->cooldown;
+}
+
+void jumpIsFalse(Entity* self) {
+	self->cooldown = 1;
+}
+void jumpIsTrue(Entity* self) {
+	 self->cooldown = 0;
+}
+
