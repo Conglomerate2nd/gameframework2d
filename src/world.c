@@ -168,6 +168,18 @@ World* world_load(const char* filename)
 				walker_new_pos(i * 64, j * 64);
 			}
 			if (world->tileMap[i + (j * width)] == 19) {
+				jumper_new_pos(i * 64, j * 64);
+			}
+			if (world->tileMap[i + (j * width)] == 20) {
+				flyer_new_pos(i * 64, j * 64);
+			}
+			if (world->tileMap[i + (j * width)] == 21) {
+				runner_new_pos(i * 64, j * 64);
+			}
+			if (world->tileMap[i + (j * width)] == 22) {
+				runnawayer_new_pos(i * 64, j * 64);
+			}
+			if (world->tileMap[i + (j * width)] == 23) {
 				boss_new_pos(i * 64, j * 64);
 			}
 		}
@@ -335,6 +347,31 @@ void world_draw_active(World* world)
 
 	gf2d_sprite_draw_image(activeworld->tileLayer, offset);
 
+
+	int i, j, index;
+	GFC_Rect bounds;
+	//NOTE refering to world crashes, but using activeworld works.
+
+	/*
+	if (self->bounds==NULL) {
+		return;
+	}
+	*/
+	for (j = 0; j < activeworld->tileHeight; j++)
+	{
+		for (i = 0; i < activeworld->tileWidth; i++)
+		{
+
+			index = i + (j * activeworld->tileWidth);//converts position on tilemap into position in array
+			if (activeworld->tileMap[index] == 0)continue;
+			bounds = gfc_rect(i * 64+offset.x, j * 64+offset.y, 64, 64);
+			gf2d_draw_rect(bounds, GFC_COLOR_BLUE);
+			/*
+			*/
+		}
+	}
+
+
 }
 
 void world_setup_camera(World* world)
@@ -493,70 +530,80 @@ void tile_1(int i, int j, World* world, Entity* self)
 {
 
 	//Not working for full collision, perfect for one way tiles  for top or left modidfied
-
-	if ((self->bounds.x < i * 64) && (!((self->bounds.y + self->bounds.h > j * 64 + 64) || (self->bounds.y < j * 64))))
+	if (get_tile_left(i * 64, j * 64) != 1)
 	{
-		//slog("on left");
-
-		//slog("%f x", i * 64);
-		//self->position.x = i * 64+64;
-		self->velocity.x = 0;
-		self->position.x = i * 64 - 64;
-		if (self->team == ETT_enemy)
+		if ((self->bounds.x < i * 64) && (!((self->bounds.y + self->bounds.h > j * 64 + 64) || (self->bounds.y < j * 64))))
 		{
-			self->directionX *= -1;
-		}
-		return;//NOTE: I want the collision to check for one then pass, because we can't be colliding on multiple sidesof the same tile,
-		//if the player is colliding on the side, then they are definitely colliding with the top or bottommm
+			//slog("on left");
 
+			//slog("%f x", i * 64);
+			//self->position.x = i * 64+64;
+			self->velocity.x = 0;
+			self->position.x = i * 64 - 64;
+			if (self->team == ETT_enemy)
+			{
+				self->directionX *= -1;
+			}
+			return;//NOTE: I want the collision to check for one then pass, because we can't be colliding on multiple sidesof the same tile,
+			//if the player is colliding on the side, then they are definitely colliding with the top or bottommm
+
+		}
 	}
 
-	if ((self->bounds.x + self->bounds.w > i * 64) && (!((self->bounds.y + self->bounds.h > j * 64 + 64) || (self->bounds.y < j * 64))))
+	if (get_tile_right(i * 64, j * 64) != 1)
 	{
-		//slog("on right")
-		//slog("%f x", i * 64);
-		//self->position.x = i * 64;
-		self->velocity.x = 0;
-		self->position.x = i * 64 + 64;
-		if (self->team == ETT_enemy)
+		if ((self->bounds.x + self->bounds.w > i * 64) && (!((self->bounds.y + self->bounds.h > j * 64 + 64) || (self->bounds.y < j * 64))))
 		{
-			self->directionX *= -1;//IF enemy flip their direction of movement
-		}
-		return;//NOTE: I want the collision to check for one then pass, because we can't be colliding on multiple sidesof the same tile,
-		//if the player is colliding on the side, then they are definitely colliding with the top or bottommm
+			//slog("on right")
+			//slog("%f x", i * 64);
+			//self->position.x = i * 64;
+			self->velocity.x = 0;
+			self->position.x = i * 64 + 64;
+			if (self->team == ETT_enemy)
+			{
+				self->directionX *= -1;//IF enemy flip their direction of movement
+			}
+			return;//NOTE: I want the collision to check for one then pass, because we can't be colliding on multiple sidesof the same tile,
+			//if the player is colliding on the side, then they are definitely colliding with the top or bottommm
 
+		}
 	}
 	//if at wall of tile, and not ontop or below same tile
 	//if that and is not there it  will push the player - use for treadmill tiles
 
 
-
-	if ((self->bounds.y < j * 64))
+	if (get_tile_above(i*64,j*64) != 1)
 	{
-		//self->position.y = j * 64;
-		//slog("on top");
-
-		self->velocity.y = 0;
-		self->position.y = (j - 1) * 64;//What this does is set the y position of self to the tile bottom of the tile above j
-		if (self->isFlying == 1)
+		if ((self->bounds.y < j * 64))
 		{
-			self->directionY *= -1;//IF enemy flip their direction of movement
+			//self->position.y = j * 64;
+			//slog("on top");
+
+			self->velocity.y = 0;
+			self->position.y = (j - 1) * 64;//What this does is set the y position of self to the tile bottom of the tile above j
+			if (self->isFlying == 1)
+			{
+				self->directionY *= -1;//IF enemy flip their direction of movement
+			}
+			return;
 		}
-		return;
 	}
 
-	if ((self->bounds.y + self->bounds.h > j * 64 + 64))
+	if (get_tile_below(i * 64, j * 64) != 1)
 	{
-		//slog("on bottom");
-		//self->position.y = j * 64 + 64;
-		self->velocity.y = 0;
-		//Move to +1 below the tile so player does not stick and will fall affected by gravity
-		self->position.y = j * 64 + 65;//What this does is set the y position of self to the tile bottom of the tile above j
-		if (self->isFlying == 1)
+		if ((self->bounds.y + self->bounds.h > j * 64 + 64))
 		{
-			self->directionY *= -1;//IF enemy flip their direction of movement
+			//slog("on bottom");
+			//self->position.y = j * 64 + 64;
+			self->velocity.y = 0;
+			//Move to +1 below the tile so player does not stick and will fall affected by gravity
+			self->position.y = j * 64 + 65;//What this does is set the y position of self to the tile bottom of the tile above j
+			if (self->isFlying == 1)
+			{
+				self->directionY *= -1;//IF enemy flip their direction of movement
+			}
+			return;
 		}
-		return;
 	}
 
 }
@@ -873,3 +920,52 @@ void oneWayBottom(int i, int j, World* world, Entity* self)
 //IF TILE RIGHT IS NOT 0 - collide using right collision
 
 //IF TILE LEFT IS NOT 0 - collide using left collision
+
+
+int get_tile_right(float x, float y) 
+{
+	int xInt,yInt;
+	//will get the top corner of tile  we are on
+	xInt = (int)(x /64);
+	yInt = (int)(y / 64);
+
+	if ((xInt + (yInt * activeworld->tileWidth) + 1) < 0)return 0;
+	if ((xInt + (yInt * activeworld->tileWidth) + 1) > activeworld->tileHeight * activeworld->tileWidth)return 0;
+	return activeworld->tileMap[xInt + (yInt * activeworld->tileWidth)+1];
+}
+
+int get_tile_left(float x, float y)
+{
+	int xInt, yInt;
+	//will get the top corner of tile  we are on
+	xInt = (int)(x / 64);
+	yInt = (int)(y / 64);
+
+	if ((xInt + (yInt * activeworld->tileWidth) - 1) < 0)return 0;
+	if ((xInt + (yInt * activeworld->tileWidth) - 1) > activeworld->tileHeight*activeworld->tileWidth)return 0;
+	return activeworld->tileMap[xInt + (yInt * activeworld->tileWidth) - 1];
+}
+
+int get_tile_above(float x, float y)
+{
+	int xInt, yInt;
+	//will get the top corner of tile  we are on
+	xInt = (int)(x / 64);
+	yInt = (int)(y / 64);
+
+	if ((xInt + ((yInt - 1) * activeworld->tileWidth)) < 0)return 0;
+	if ((xInt + ((yInt - 1) * activeworld->tileWidth)) > activeworld->tileHeight * activeworld->tileWidth)return 0;
+	return activeworld->tileMap[xInt + ((yInt-1) * activeworld->tileWidth)];
+}
+
+int get_tile_below(float x, float y)
+{
+	int xInt, yInt;
+	//will get the top corner of tile  we are on
+	xInt = (int)(x /64);
+	yInt = (int)(y /64);
+
+	if ((xInt + ((yInt + 1) * activeworld->tileWidth)) < 0)return 0;
+	if ((xInt + ((yInt + 1) * activeworld->tileWidth)) > activeworld->tileHeight * activeworld->tileWidth)return 0;
+	return activeworld->tileMap[xInt + ((yInt+1) * activeworld->tileWidth)];
+}

@@ -110,7 +110,7 @@ Entity* player_new_pos(int x,int y)
 	self->free = playerFree;
 	self->health = 5;
 	self->team = ETT_player;
-	gfc_input_init("input.cfg");
+	//gfc_input_init("input.cfg");
 	
 	return self;
 }
@@ -194,15 +194,31 @@ void playerThink(Entity* self)
 	*/
 
 	gfc_input_update();
-	if (gfc_input_command_down("left")){
-		//slog("here Left");
-		self->velocity.x = -3;
+
+
+	/*OLD AND BUGGY WITH NO CHECKS*/
+	/*
+	if (gfc_input_command_down("left")) {
+		 self->velocity.x = -3;
 	}
 	else if (gfc_input_command_down("right")) {
-		//slog("here Right");
 		self->velocity.x = 3;
 	}
 	else self->velocity.x = 0;
+	*/
+
+
+	//**TESTING ATTENTIION PLEASE**//
+
+	
+	if (gfc_input_command_down("left") && get_tile_left(self->position.x+62,self->position.y) != 1){
+	 self->velocity.x = -3;
+	}
+	else if (gfc_input_command_down("right")&&get_tile_right(self->position.x, self->position.y)!=1) {
+		 self->velocity.x = 3;
+	}
+	else self->velocity.x = 0;
+	
 	/*
 	if (cooldown == 0) {
 		self->velocity.y -= 20;
@@ -210,9 +226,12 @@ void playerThink(Entity* self)
 	}
 	else cooldown--;
 	*/
+
 	if (gfc_input_command_down("jump")) {
+
 		//slog("%f velocity y", self->velocity.y);
 		//self->position.y += -15*self->directionY;
+		if(get_tile_above(self->position.x,self->position.y)==0)
 		self->position.y += -15;
 	}
 	else self->velocity.y = self->velocity.y;
@@ -289,26 +308,30 @@ void playerPhysicsCalc(Entity* self) {
 	//time is not a variable because adding a variable each frame is the same as multiplying over time
 
 	//position = position + velocity * time
-	
-	self->position.x += self->velocity.x;
-	self->position.y += self->velocity.y;
-	
 	//gfc_vector2d_add(self->position, self->position, self->velocity);
 
-	
+
 	//velocity = velocity + acceleration  * time
 	//velocity = velocity + (acceleration + gravity ) * time for y
 	
-	self->velocity.x += self->acceleration.x;
-	self->velocity.y += self->acceleration.y + self->gravity;
-
-	if (self->velocity.y<-15) {
-		self->velocity.y = -15;
+	//X AXIS
+	if (get_tile_right(self->position.x, self->position.y) != 1 || get_tile_left(self->position.x, self->position.y) != 1) {
+		self->position.x += self->velocity.x;
+		self->velocity.x += self->acceleration.x;
 	}
 
-	if (self->velocity.y > 30) {
-		self->velocity.y = 30;
+	//YAXIS
+
+	if (get_tile_below(self->position.x, self->position.y) != 0 || get_tile_above(self->position.x, self->position.y+64) != 0) {
+		self->position.y = self->position.y;
 	}
+	if (get_tile_below(self->position.x, self->position.y) == 0) {
+		self->position.y += self->velocity.y;
+		self->velocity.y += self->acceleration.y + self->gravity;
+	}
+	else self->velocity.y = 0;
+
+
 
 	/*
 	int x = (int)(self->position.x/64);

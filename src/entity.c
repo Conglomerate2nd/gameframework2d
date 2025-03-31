@@ -131,6 +131,7 @@ void entityDraw(Entity* self)
 	GFC_Vector2D drawAtOffset;
 	GFC_Vector2D position;
 	GFC_Vector2D offset;
+	GFC_Rect boxBound;
 	if (!self)
 	{
 		return;
@@ -143,6 +144,7 @@ void entityDraw(Entity* self)
 	offset = camera_get_offset();
 	gfc_vector2d_add(position, self->position,offset);
 	
+
 	
 	
 	gf2d_sprite_render(
@@ -157,7 +159,12 @@ void entityDraw(Entity* self)
 		self->frame
 	);
 		
-	
+	boxBound.x = self->bounds.x+offset.x;
+	boxBound.y = self->bounds.y + offset.y;
+	boxBound.w = self->bounds.w;
+	boxBound.h = self->bounds.h;
+
+	gf2d_draw_rect(boxBound, GFC_COLOR_YELLOW);
 }
 
 void entityAnimate(Entity* self) {
@@ -336,6 +343,6 @@ EntityTeamType get_team_type(Entity* self) {
 }
 
 void damageSelf(Entity* self) {
-	slog("damage");
+	//slog("damage");
 	self->health--;
 }

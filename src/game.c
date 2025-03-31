@@ -43,7 +43,7 @@ int main(int argc, char * argv[])
         720,
         gfc_vector4d(0,0,0,255),
         0);
-    //gfc_input_init("input.cfg");
+    gfc_input_init("input.cfg");
     gf2d_graphics_set_frame_delay(16);
     gf2d_sprite_init(1024);
     entity_system_init(1000);//Very low ball number
@@ -67,7 +67,8 @@ int main(int argc, char * argv[])
     /*main game loop*/
     while(!done)
     {
-        SDL_PumpEvents();   // update SDL's internal event structures
+        gfc_input_update();
+        //SDL_PumpEvents();   // update SDL's internal event structures
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
         /*update things here*/
         SDL_GetMouseState(&mx,&my);

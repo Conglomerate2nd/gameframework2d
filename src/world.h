@@ -119,4 +119,14 @@ void tile_7(int i, int j, World* world, Entity* self);
 void tile_8(int i, int j, World* world, Entity* self);
 void tile_9(int i, int j, World* world, Entity* self);
 void tile_10(int i, int j, World* world, Entity* self);
+
+
+/**
+* @brief, all functions get tile next to position point.
+*/
+int get_tile_right(float x, float y);
+int get_tile_left(float x, float y);
+int get_tile_above(float x, float y);
+int get_tile_below(float x, float y);
+int getDistance(float x, float y);
 #endif
