@@ -151,3 +151,6 @@ void bossFree(Entity* self)
 	if (!self)return;
 	entity_free(self);
 }
+
+
+//Program Distant ontraint for multiple particles

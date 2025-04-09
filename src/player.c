@@ -197,7 +197,7 @@ void playerThink(Entity* self)
 	if (gfc_input_command_down("left") && get_tile_left(self->position.x+60,self->position.y) != 1){
 		self->velocity.x = -3;
 		//self->position.x -= 15;
-	}
+	} 
 	else if (gfc_input_command_down("right")&&get_tile_right(self->position.x, self->position.y)!=1) {
 		 self->velocity.x = 3;
 		//self->position.x += 15;
@@ -240,6 +240,9 @@ void playerThink(Entity* self)
 }
 void playerUpdate(Entity* self)
 {
+	if (self->health == 0) {
+		playerFree(self);
+	}
 	/*
 	* Some of my sprites are a single frame
 	* 
@@ -323,7 +326,13 @@ void playerPhysicsCalc(Entity* self) {
 
 void playerDamageSelf(Entity* self) {
 	//slog("damage");
-	self->health--;
+	if (self->healthTickCount == 0)
+	{
+		self->health--;
+		self->healthTickCount = 2000;
+	}
+	else self->healthTickCount--;
+	
 }
 
 int isJumpValid(Entity* self) {

@@ -129,4 +129,13 @@ int get_tile_left(float x, float y);
 int get_tile_above(float x, float y);
 int get_tile_below(float x, float y);
 int getDistance(float x, float y);
+
+
+int HollowTileCheckRight(int i, int j);
+
+int HollowTileCheckLeft(int i, int j);
+
+int HollowTileCheckUp(int i, int j);
+
+int HollowTileCheckDown(int i, int j);
 #endif

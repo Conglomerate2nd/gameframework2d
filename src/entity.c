@@ -344,5 +344,11 @@ EntityTeamType get_team_type(Entity* self) {
 
 void damageSelf(Entity* self) {
 	//slog("damage");
-	self->health--;
+	if (self->healthTickCount == 0)
+	{
+		self->health--;
+		self->healthTickCount = 100;
+	}
+	else self->healthTickCount--;
+
 }

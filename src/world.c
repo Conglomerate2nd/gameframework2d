@@ -969,3 +969,5 @@ int get_tile_below(float x, float y)
 	if ((xInt + ((yInt + 1) * activeworld->tileWidth)) > activeworld->tileHeight * activeworld->tileWidth)return 0;
 	return activeworld->tileMap[xInt + ((yInt+1) * activeworld->tileWidth)];
 }
+
+

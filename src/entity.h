@@ -49,6 +49,7 @@ typedef struct Entity_S {
 	EntityCollisionLayers	layer;
 	Uint8					inuse;// can make variables private 
 	int						cooldown;
+	int						healthTickCount;// cooldown for health damage
 	int 					health;
 	GFC_Circle				sensor;//This can be used for things like checking proximity to player or other functions
 	
