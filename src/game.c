@@ -7,6 +7,7 @@
 #include "gfc_vector.h"
 #include "gf2d_sprite.h"
 
+#include "gfc_string.h"
 #include "entity.h"
 #include "player.h"
 #include "flyer.h"
@@ -30,8 +31,6 @@ int main(int argc, char * argv[])
     Sprite *mouse;
     GFC_Color mouseGFC_Color = gfc_color8(0,100,255,200);
     GFC_Rect rectBar;
-    Entity player;// not necessary, can be declared at definition, but helps readability
-    
     /*program initializtion*/
     init_logger("gf2d.log",0);
     slog("---==== BEGIN ====---");
@@ -49,7 +48,15 @@ int main(int argc, char * argv[])
     entity_system_init(1000);//Very low ball number
     SDL_ShowCursor(SDL_DISABLE);
     camera_set_size(screen);
-    
+    player_new_pos(2 * 64, 4 * 64);//Hard code for something later and world draw testing
+
+
+    //Feature Debug Flags
+    int drawFlag = 0;
+
+
+    //flag end 
+
     /*demo setup*/
     //sprite = gf2d_sprite_load_image("images/backgrounds/test.png");
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
@@ -62,6 +69,15 @@ int main(int argc, char * argv[])
     //GFC_Rect rect = gfc_rect(0,100,100,5);
     world_setup_camera(activeworld);
 
+    
+    for (int i = 0; i < argc; i++)
+    {
+        slog(argv[i]);
+        if (gfc_strlcmp("draw", argv[i])) {
+            drawFlag = 0;
+        }
+        else  drawFlag = 1;
+    }
 
     slog("press [escape] to quit");
     /*main game loop*/
@@ -120,6 +136,11 @@ int main(int argc, char * argv[])
                     gf2d_draw_rect_filled(rectBar, GFC_COLOR_RED);
                 }
             }
+
+            //still no
+            if (drawFlag == 1) { HighlightTile(mx, my, activeworld); }
+          
+            
         gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
         
 

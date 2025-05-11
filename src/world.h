@@ -120,6 +120,7 @@ void tile_8(int i, int j, World* world, Entity* self);
 void tile_9(int i, int j, World* world, Entity* self);
 void tile_10(int i, int j, World* world, Entity* self);
 
+//void tile_3test(int i, int j, World* world, Entity* self);
 
 /**
 * @brief, all functions get tile next to position point.
@@ -130,12 +131,22 @@ int get_tile_above(float x, float y);
 int get_tile_below(float x, float y);
 int getDistance(float x, float y);
 
+//Checks
 
-int HollowTileCheckRight(int i, int j);
+//We do not need the cordinates because we will use in tandem with get_tiles
+//Syntax HollowTileCheck(get_tiles)
+int HollowTileCheckRight(int i);
 
-int HollowTileCheckLeft(int i, int j);
+int HollowTileCheckLeft(int i);
 
-int HollowTileCheckUp(int i, int j);
+int HollowTileCheckUp(int i);
 
-int HollowTileCheckDown(int i, int j);
+int HollowTileCheckDown(int i);
+
+
+void HighlightTile(float x, float y, World *world);
+//Only calledby highligh tile
+void DrawTile(float mx, float my, World* world, int tile);
+
+void EraseTile(float mx, float my, World* world, int index);
 #endif

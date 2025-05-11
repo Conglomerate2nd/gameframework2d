@@ -52,7 +52,8 @@ Entity* player_new()
 	
 	self->bounds = gfc_rect(self->position.x+self->offset.x, self->position.y+self->offset.y, 64, 64);
 	
-
+	self->center.x = self->position.x + 32;
+	self->center.y = self->position.y + 32;
 	self->think = playerThink;
 	self->update = playerUpdate;
 	self->free = playerFree;
@@ -115,53 +116,6 @@ Entity* player_new_pos(int x,int y)
 	return self;
 }
 
-/*
-Entity* player_new_global_pos(int x, int y)
-{
-
-	Entity* self;
-	self = entity_new();
-
-	if (!self)
-	{
-		slog("Failed to create new player");
-		return NULL;
-	}
-
-
-	//can all be defined either here through hard coding or by using a json file
-
-	
-
-	//to gt frame dimensions ddivide image dimensions by number of frames. 
-	player->sprite = gf2d_sprite_load_all(
-		"images/Sprites/gobblo.png",
-		64,
-		64,
-		NULL,
-		0
-	);
-	player->frame = 0;
-	player->acceleration.y = .5;
-	slog("%i x,%i y player spawn", x, y);
-	player->position = gfc_vector2d(x, y);
-
-	//setting the  offset by 64 seems to work well with the bounds, but needs more testing as sprite is 128*128 pixels
-	player->offset.y = 0;
-	player->offset.x = 0;
-
-	player->bounds = gfc_rect(player->position.x + player->offset.x, player->position.y + player->offset.y, 64, 64);
-
-	player->directionY = 1;
-	player->think = playerThink;
-	player->update = playerUpdate;
-	player->free = playerFree;
-	player->health = 5;
-	gfc_input_init("input.cfg");
-
-	return player;
-}
-*/
 
 void playerThink(Entity* self)
 {
@@ -194,22 +148,81 @@ void playerThink(Entity* self)
 	//**TESTING ATTENTIION PLEASE**//
 
 	//Why +60? - TO CREATE a pixel gap between the left collision, avoiding edge cases, 63 and 64 have edge cases.
-	if (gfc_input_command_down("left") && get_tile_left(self->position.x+60,self->position.y) != 1){
+	//Using %2 to get left tile allows one way there to work, but using an
+	if (gfc_input_command_down("left") && HollowTileCheckLeft(get_tile_left(self->position.x+60,self->position.y)) != 1){
 		self->velocity.x = -3;
 		//self->position.x -= 15;
+		self->directionX = -1;
 	} 
-	else if (gfc_input_command_down("right")&&get_tile_right(self->position.x, self->position.y)!=1) {
+	else if (gfc_input_command_down("right") && HollowTileCheckRight(get_tile_right(self->position.x, self->position.y)) != 1) {
 		 self->velocity.x = 3;
 		//self->position.x += 15;
+		 self->directionX = 1;
 	}
 	else self->velocity.x = 0;
 	
-	/*
-	if (cooldown == 0) {
-		self->velocity.y -= 20;
-		cooldown = 100;
+
+	//Working dash with direction
+	if (gfc_input_command_down("dash")&&self->cooldownDash==0) 
+	{
+		if (self->directionX == 1 && HollowTileCheckRight(get_tile_right(self->position.x, self->position.y) != 1))
+		{
+			if ((HollowTileCheckRight(get_tile_right(self->position.x + 192, self->position.y)) != 1)&&(HollowTileCheckRight(get_tile_right(self->position.x + 128, self->position.y)) != 1) && (HollowTileCheckRight(get_tile_right(self->position.x + 64, self->position.y)) != 1)) {
+				self->position.x += 190;
+			}
+			if ((HollowTileCheckRight(get_tile_right(self->position.x + 128, self->position.y)) != 1) && (HollowTileCheckRight(get_tile_right(self->position.x + 64, self->position.y)) != 1)) {
+				self->position.x += 128;
+			}
+			else if (HollowTileCheckRight(get_tile_right(self->position.x + 64, self->position.y)) != 1) {
+				self->position.x += 64;
+
+			}
+		}
+
+		if (self->directionX == -1 && HollowTileCheckLeft(get_tile_left(self->position.x, self->position.y) != 1))
+		{
+			if ((HollowTileCheckRight(get_tile_left(self->position.x - 192, self->position.y)) != 1) && (HollowTileCheckRight(get_tile_left(self->position.x - 128, self->position.y)) != 1) && (HollowTileCheckLeft(get_tile_left(self->position.x - 64, self->position.y)) != 1)) {
+				self->position.x -= 190;
+			}
+			if ((HollowTileCheckRight(get_tile_left(self->position.x - 128, self->position.y)) != 1) && (HollowTileCheckLeft(get_tile_left(self->position.x - 64, self->position.y)) != 1)) {
+				self->position.x -= 128;
+			}
+			else if (HollowTileCheckLeft(get_tile_left(self->position.x - 64, self->position.y)) != 1) {
+				self->position.x -= 64;
+
+			}
+		}
+		self->cooldownDash = 32;
+		//else self->position.x += 64;
+
+		//self->position.x += 15;
 	}
-	else cooldown--;
+
+	/*
+	if (gfc_input_command_down("right") && gfc_input_command_down("dash") && HollowTileCheckRight(get_tile_right(self->position.x, self->position.y)) != 1) {
+		if ((HollowTileCheckRight(get_tile_right(self->position.x + 128, self->position.y)) != 1) && (HollowTileCheckRight(get_tile_right(self->position.x + 64, self->position.y)) != 1)) {
+			self->position.x += 120;
+		}
+		else if (HollowTileCheckRight(get_tile_right(self->position.x + 64, self->position.y)) != 1) {
+			self->position.x += 64;
+
+		}
+		//else self->position.x += 64;
+
+		//self->position.x += 15;
+	}*/
+
+	//DASH
+	/*
+	if (gfc_input_command_down("left") && HollowTileCheckLeft(get_tile_left(self->position.x + 60, self->position.y)) != 1) {
+		self->velocity.x = -3;
+		//self->position.x -= 15;
+	}
+	else if (gfc_input_command_down("right") && HollowTileCheckRight(get_tile_right(self->position.x, self->position.y)) != 1) {
+		self->velocity.x = 3;
+		//self->position.x += 15;
+	}
+	else self->velocity.x = 0;
 	*/
 
 	if (gfc_input_command_down("jump")) {
@@ -224,6 +237,8 @@ void playerThink(Entity* self)
 	}
 	else self->velocity.y = self->velocity.y;
 	
+	//TODO: DASH - get distance between tile in front and if it is solid, add the distance to X, else add set distance
+
 
 	playerPhysicsCalc(self);
 
@@ -237,12 +252,33 @@ void playerThink(Entity* self)
 	//world_tile_collide_active(activeworld, self->bounds);
 	//BOUND TESTING DRAW RECTS
 	
+	if (self->cooldownDash > 0) {
+		self->cooldownDash--;
+	}
 }
 void playerUpdate(Entity* self)
 {
 	if (self->health == 0) {
+		slog("dead");
 		playerFree(self);
+
 	}
+
+	/*
+	if (self->directionX == -1) {
+
+		gf2d_sprite_draw(
+			self->sprite,
+			self->position,
+			NULL,
+			&self->center,
+			0,
+			-1,
+			NULL,
+			NULL);
+	}
+	*/
+
 	/*
 	* Some of my sprites are a single frame
 	* 
@@ -270,6 +306,7 @@ void playerFree(Entity* self)
 {
 	if (!self)return;
 	entity_free(self);
+	
 }
 
 //Calculations for velocity gravity acceleration etc
@@ -345,4 +382,5 @@ void jumpIsFalse(Entity* self) {
 void jumpIsTrue(Entity* self) {
 	 self->cooldown = 0;
 }
+
 

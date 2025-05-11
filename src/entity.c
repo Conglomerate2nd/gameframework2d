@@ -61,8 +61,13 @@ void entity_free_all(Entity* ignore)
 void entity_free(Entity* self) 
 {
 	if (!self)return;//self is not exist
+	slog("sprite free");
 	gf2d_sprite_free(self->sprite);
-	if (self->free) self->free(self->data);
+	self->sprite = NULL;
+	self->inuse = 0;
+
+	//if (self->free) self->free(self);
+	//memset(self, 0, sizeof(Entity));
 
 }
 
@@ -346,7 +351,7 @@ void damageSelf(Entity* self) {
 	//slog("damage");
 	if (self->healthTickCount == 0)
 	{
-		self->health--;
+		self->health--; 
 		self->healthTickCount = 100;
 	}
 	else self->healthTickCount--;

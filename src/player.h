@@ -16,7 +16,7 @@ Entity* player_new();
 * @return  returns a pointer to the new player returns null on failure
 */
 Entity* player_new_pos(int x, int y);
-Entity* player_get();
+//Entity* player_get(); - Refer to Entity.h for this as entity_player_get()
 void playerFree(Entity* self);
 void playerDamageSelf(Entity* self);
 

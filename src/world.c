@@ -374,6 +374,8 @@ void world_draw_active(World* world)
 
 }
 
+
+
 void world_setup_camera(World* world)
 {
 	if (!world)return;
@@ -970,4 +972,240 @@ int get_tile_below(float x, float y)
 	return activeworld->tileMap[xInt + ((yInt+1) * activeworld->tileWidth)];
 }
 
+/*
+int canGoThere(Entity* self, float x, float y) {
+	int xInt, yInt;
+	GFC_Vector2D posPredict;
+	//will get the top corner of tile  we are on
+	xInt = (int)(x / 64);
+	yInt = (int)(y / 64);
+
+	gfc_vector2d_add(posPredict, self->position, self->velocity);
+	
+
+}*/
+
+int HollowTileCheckRight(int i)
+{
+	switch (i) {
+	case 1:return 1; break;
+	default:break;
+	}
+	return 0;
+}
+
+int HollowTileCheckLeft(int i) 
+{
+	switch (i) {
+	case 1:
+	case 3:return 1; break;
+	default:break;
+	}
+	return 0;
+}
+
+int HollowTileCheckUp(int i) 
+{
+	switch (i) {
+	case 1:return 1; break;
+	default:break;
+	}
+	return 0;
+}
+
+int HollowTileCheckDown(int i)
+{
+	switch (i) {
+	case 1:return 1; break;
+	default:break;
+	}
+	return 0;
+}
+
+
+//****************
+// These were originally specific functions for deliverables. I plan to make them all one way with a specific direction and rename these tiles to a new number later.
+//******************
+
+/*
+void tile_4(int i, int j, World* world, Entity* self) {
+	self->directionY = -1;
+	self->acceleration.y = -.5;
+}
+
+void tile_5(int i, int j, World* world, Entity* self) {
+	self->directionY = 1;
+	self->acceleration.y = .5;//Default  Gravity
+}
+void tile_6(int i, int j, World* world, Entity* self) {
+	slog("hazard hit");
+	//entity_free(self);
+	damageSelf(entity_player_get());
+}
+
+*/
+
+void HighlightTile(float mx, float my, World *world)
+{
+	//int MouseX = (int)mx % 64;
+	//int MouseY = (int)my % 64;
+	const Uint8* keys;
+	keys = SDL_GetKeyboardState(NULL);
+
+		if (!activeworld) {
+			slog("no active world to draw");
+			return;
+		}
+
+
+		GFC_Vector2D position;
+		GFC_Vector2D mouse;
+		GFC_Vector2D offset;
+
+		offset = camera_get_offset();
+		//slog("It was poition");
+		position.x = 0;
+		position.y = 0;
+
+		mouse.x = mx;
+		mouse.y = my;
+
+		//originally the draw imag function had  vector2D(0,0), that was giving me an error, so I initialized position to 0,0 and am using it once
+		//to call draw at 0,0 and then for the for loops which will override the value.
+
+
+		int i, j, index;
+		GFC_Rect bounds;
+		//NOTE refering to world crashes, but using activeworld works.
+
+		/*
+		if (self->bounds==NULL) {
+			return;
+		}
+		*/
+		for (j = 0; j < activeworld->tileHeight; j++)
+		{
+			for (i = 0; i < activeworld->tileWidth; i++)
+			{
+
+				index = i + (j * activeworld->tileWidth);//converts position on tilemap into position in array
+				//if (activeworld->tileMap[index] == 0)continue;
+				bounds = gfc_rect(i * 64 + offset.x, j * 64 + offset.y, 64, 64);
+				if (gfc_point_in_rect(mouse, bounds)) 
+				{
+					gf2d_draw_rect(bounds, GFC_COLOR_GREEN);
+					if (keys[SDL_SCANCODE_R]) {
+						DrawTile(i * 64 + offset.x, j * 64 + offset.y, activeworld, index);
+					}
+					if (keys[SDL_SCANCODE_E]) {
+						EraseTile(i * 64 + offset.x, j * 64 + offset.y, activeworld, index);
+					}
+				}
+				
+				
+				/*
+				*/
+			}
+		}
+
+
+}
+
+void DrawTile(float mx, float my, World* world,int index)
+{
+	//int MouseX = (int)mx % 64;
+	//int MouseY = (int)my % 64;
+
+
+	if (!activeworld) {
+		slog("no active world to draw");
+		return;
+	}
+
+
+	GFC_Vector2D position;
+	GFC_Vector2D mouse;
+	GFC_Vector2D offset;
+
+	offset = camera_get_offset();
+	//slog("It was poition");
+	
+
+	mouse.x = mx;
+	mouse.y = my;
+
+	//originally the draw imag function had  vector2D(0,0), that was giving me an error, so I initialized position to 0,0 and am using it once
+	//to call draw at 0,0 and then for the for loops which will override the value.
+
+
+	int i, j;
+	Uint32  frame;
+	GFC_Rect bounds;
+	//NOTE refering to world crashes, but using activeworld works.
+
+	/*
+	if (self->bounds==NULL) {
+		return;
+	}
+	*/
+	//index = i + (j * world->tileWidth);//converts position on tilemap into position in array
+	//if (world->tileMap[index] == 0) continue;//skip this cause its empty
+
+	world->tileMap[index] = 1;
+	//frame = world->tileMap[index] - 1;
+	
+	gf2d_sprite_free(world->tileLayer);
+	world_tile_layer_build(world);
+	//world_draw_active(activeworld);
+}
+
+
+
+void EraseTile(float mx, float my, World* world, int index)
+{
+	//int MouseX = (int)mx % 64;
+	//int MouseY = (int)my % 64;
+
+
+	if (!activeworld) {
+		slog("no active world to draw");
+		return;
+	}
+
+
+	GFC_Vector2D position;
+	GFC_Vector2D mouse;
+	GFC_Vector2D offset;
+
+	offset = camera_get_offset();
+	//slog("It was poition");
+
+
+	mouse.x = mx;
+	mouse.y = my;
+
+	//originally the draw imag function had  vector2D(0,0), that was giving me an error, so I initialized position to 0,0 and am using it once
+	//to call draw at 0,0 and then for the for loops which will override the value.
+
+
+	int i, j;
+	Uint32  frame;
+	GFC_Rect bounds;
+	//NOTE refering to world crashes, but using activeworld works.
+
+	/*
+	if (self->bounds==NULL) {
+		return;
+	}
+	*/
+	//index = i + (j * world->tileWidth);//converts position on tilemap into position in array
+	//if (world->tileMap[index] == 0) continue;//skip this cause its empty
+
+	world->tileMap[index] = 0;
+	//frame = world->tileMap[index] - 1;
+
+	gf2d_sprite_free(world->tileLayer);
+	world_tile_layer_build(world);
+	//world_draw_active(activeworld);
+}
 
