@@ -11,6 +11,7 @@ typedef enum
 	ETT_none,
 	ETT_player,
 	ETT_enemy,
+	ETT_weapon,
 	ETT_item,
 	ETT_world_object,
 	ETT_MAX
@@ -53,7 +54,7 @@ typedef struct Entity_S {
 	int						healthTickCount;// cooldown for health damage
 	int 					health;
 	GFC_Circle				sensor;//This can be used for things like checking proximity to player or other functions
-	
+	int						ttl; //Time to live for projectiles- attack can be just a 1 pixel dist projectile
 	//CONTACTS AT MOMENT
 
 

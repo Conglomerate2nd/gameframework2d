@@ -6,6 +6,7 @@
 #include "gfc_shape.h"
 #include "gfc_vector.h"
 #include "gf2d_sprite.h"
+#include "gfc_audio.h"
 
 #include "gfc_string.h"
 #include "entity.h"
@@ -14,6 +15,7 @@
 #include "walker.h"
 #include "world.h"
 #include "camera.h"
+#include "attack.h"
 
 int main(int argc, char * argv[])
 {
@@ -24,7 +26,7 @@ int main(int argc, char * argv[])
     int done = 0;
 
     const Uint8 * keys;
-    //Sprite *sprite;
+    Sprite *sprite;
     //World *world;
     int mx,my;
     float mf = 0;
@@ -49,6 +51,8 @@ int main(int argc, char * argv[])
     SDL_ShowCursor(SDL_DISABLE);
     camera_set_size(screen);
     player_new_pos(2 * 64, 4 * 64);//Hard code for something later and world draw testing
+    //attack_new_pos1(4 * 64, 4 * 64,1);//Hard code for something later and world draw testing
+    walker_new_pos(4 * 64, 4 * 64);//Hard code for something later and world draw testing
 
 
     //Feature Debug Flags
@@ -58,11 +62,11 @@ int main(int argc, char * argv[])
     //flag end 
 
     /*demo setup*/
-    //sprite = gf2d_sprite_load_image("images/backgrounds/test.png");
+   // sprite = gf2d_sprite_load_image("images/backgrounds/test.png");
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
     
     //player = player_new_pos(384,384);
-    world_load("maps/world.map");
+    World* mainmenu = world_load("maps/menu.map");
     //Hardcode Test
     //Entity* walk = walker_new_pos(128, 128);
     //Entity* fly = flyer_new();
@@ -73,13 +77,71 @@ int main(int argc, char * argv[])
     for (int i = 0; i < argc; i++)
     {
         slog(argv[i]);
-        if (gfc_strlcmp("draw", argv[i])) {
-            drawFlag = 0;
+        if (gfc_strlcmp("draw", argv[i])==0) {
+            drawFlag = 1;
+            done = 1;//skip main menu loop
         }
-        else  drawFlag = 1;
+        else  drawFlag = 0;
     }
 
     slog("press [escape] to quit");
+
+   // gf2d_sprite_load_image("images/backgrounds/test-export2.png");
+
+    //MAIN MENU ATTEMPTS
+    while (!done)
+    {
+        gfc_audio_init(10, 10, 1, 1, 1, 1);
+        gfc_input_update();
+        //SDL_PumpEvents();   // update SDL's internal event structures
+        keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
+        /*update things here*/
+        SDL_GetMouseState(&mx, &my);
+        mf += 0.1;
+        if (mf >= 16.0)mf = 0;
+
+        
+        gf2d_graphics_clear_screen();// clears drawing buffers
+        
+        // all drawing should happen betweem clear_screen and next_frame
+            //backgrounds drawn first
+        //    //gf2d_sprite_draw_image(sprite,gfc_vector2d(0,0));
+        //world_draw_active(activeworld);
+
+        //Between Background and UI
+        
+
+        //UI elements last
+        gf2d_sprite_draw(
+            mouse,
+            gfc_vector2d(mx, my),
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+            &mouseGFC_Color,
+            (int)mf);
+
+       //if (drawFlag == 1) { HighlightTile(mx, my, activeworld); }
+        
+
+
+        gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
+
+
+        /*
+        test demo
+        */
+        // entity_obj_collision_poc(player,rect,);
+
+        if (keys[SDL_SCANCODE_RETURN])done = 1; // exit condition
+        //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
+    }
+
+    world_free(mainmenu);
+    world_load("maps/world.map");
+    done = 0;//ready for loop two
+
     /*main game loop*/
     while(!done)
     {

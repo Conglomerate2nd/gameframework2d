@@ -1,7 +1,9 @@
 #include "simple_logger.h"
 #include "simple_json.h"
 #include "gfc_input.h"
+#include "gfc_audio.h"
 #include "player.h"
+#include "attack.h"
 #include "world.h"
 #include "camera.h"
 
@@ -66,7 +68,7 @@ Entity* player_new()
 
 Entity* player_new_pos(int x,int y)
 {
-
+	//gfc_audio_init(1, 1, 1, 1, 1, 1);
 	Entity* self;
 	self = entity_new();
 
@@ -128,7 +130,7 @@ void playerThink(Entity* self)
 	//slog("in player");
 	world_tile_collide_active_entity(activeworld, self);
 
-	
+	GFC_Sound* sfx = gfc_sound_load("audio/cartoon-jump-6462.wav", .5, 0);
 
 	gfc_input_update();
 
@@ -226,7 +228,7 @@ void playerThink(Entity* self)
 	*/
 
 	if (gfc_input_command_down("jump")) {
-
+		gfc_sound_play(sfx, 0, 1, -1, -1);
 		//slog("%f velocity y", self->velocity.y);
 		//self->position.y += -15*self->directionY;
 		if (get_tile_above(self->position.x, self->position.y + 62) == 0)
@@ -237,8 +239,11 @@ void playerThink(Entity* self)
 	}
 	else self->velocity.y = self->velocity.y;
 	
-	//TODO: DASH - get distance between tile in front and if it is solid, add the distance to X, else add set distance
-
+	
+	if (gfc_input_command_down("attack")) {
+		//attack_new_pos(self->position.x + (self->directionX * 5), self->position.y,1,1100,self->directionX);
+		attack_new_pos1(self->position.x,self->position.y, 1);
+	}
 
 	playerPhysicsCalc(self);
 

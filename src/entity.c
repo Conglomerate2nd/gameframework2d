@@ -61,7 +61,7 @@ void entity_free_all(Entity* ignore)
 void entity_free(Entity* self) 
 {
 	if (!self)return;//self is not exist
-	slog("sprite free");
+	//slog("sprite free");
 	gf2d_sprite_free(self->sprite);
 	self->sprite = NULL;
 	self->inuse = 0;
@@ -74,7 +74,7 @@ void entity_free(Entity* self)
 Entity* entity_new()
 {
 	int i;
-
+	slog("made");
 	for (i = 0; i < _entManager.entityMax; i++) 
 	{
 		if (_entManager.entityList[i].inuse) continue;// skip this iteraion
@@ -270,6 +270,21 @@ void entity_system_collision()
 					//slog("player hit");
 					damageSelf(entity_player_get());
 				}
+
+
+
+				///ENEMY  VS WEAPON
+				if ((get_team_type(&_entManager.entityList[i]) == ETT_weapon) && (get_team_type(&_entManager.entityList[j]) == ETT_enemy))
+				{
+					slog("enemy hit1");
+					damageSelf(&_entManager.entityList[j]);
+				}
+				if ((get_team_type(&_entManager.entityList[i]) == ETT_enemy) && (get_team_type(&_entManager.entityList[j]) == ETT_weapon))
+				{
+					slog("enemy hit2");
+					damageSelf(&_entManager.entityList[j]);
+				}
+
 			}
 
 			entity_collision(&_entManager.entityList[i], &_entManager.entityList[j]);

@@ -3,6 +3,7 @@
 #include "gf2d_graphics.h"
 #include "gf2d_draw.h"
 #include "gfc_shape.h"
+#include "gfc_audio.h"
 
 #include "entity.h"
 #include "player.h"
@@ -89,6 +90,8 @@ World* world_load(const char* filename)
 	SJson* json = NULL;
 	SJson* worldJson = NULL;
 	SJson* verticalArray, * horizontalArray;
+	GFC_Sound* music;
+	//SJson* music;
 	Uint32 width = 0, height = 0;
 	int i, j;
 	int tile;
@@ -115,6 +118,15 @@ World* world_load(const char* filename)
 		slog("'world' object missing in %s", filename);
 		sj_free(json);
 		return NULL;
+	}
+
+	//MUSIC
+	if (sj_object_get_value(worldJson, "music") != NULL) 
+	{
+		
+		slog(sj_object_get_value_as_string(worldJson, "music"));
+		music = gfc_sound_load_music(sj_object_get_value_as_string(worldJson, "music"));
+		gfc_sound_play(music, 99, 10, -1, -1);
 	}
 
 	//Loading arrays in tle map as vertial arrays and horizontal arrays
@@ -161,9 +173,16 @@ World* world_load(const char* filename)
 			//Dont know why when multiplying by tileWidth or tileHeight will leaadd to spawning in the wrong place, but haard coding works fine
 			
 
-			if (world->tileMap[i + (j * width)] == 17) {
+
+			if (world->tileMap[i + (j * width)] == 17&&entity_player_get()==NULL) {
 				player_new_pos(i * 64, j * 64);
 			}
+			if (world->tileMap[i + (j * width)] == 17 && entity_player_get()!=NULL) {
+				entity_player_get()->position.x = i * 64;
+				entity_player_get()->position.x = j * 64;
+			}
+
+
 			if (world->tileMap[i + (j * width)] == 18) {
 				walker_new_pos(i * 64, j * 64);
 			}

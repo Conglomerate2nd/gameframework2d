@@ -46,6 +46,7 @@ Entity* walker_new()
 	self->think = walkerThink;
 	self->update = walkerUpdate;
 	self->free = walkerFree;
+	self->health = 1;
 
 
 
@@ -92,6 +93,7 @@ Entity* walker_new_pos(int x,int y)
 	self->free = walkerFree;
 	self->team = ETT_enemy;
 	self->directionX = 1;//walke foward first
+	self->health = 1;
 	return self;
 }
 
@@ -117,7 +119,11 @@ void walkerThink(Entity* self)
 }
 void walkerUpdate(Entity* self)
 {
+	if (self->health == 0) {
+		slog("dead");
+		walkerFree(self);
 
+	}
 }
 void walkerFree(Entity* self)
 {
