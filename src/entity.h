@@ -51,10 +51,12 @@ typedef struct Entity_S {
 	Uint8					inuse;// can make variables private 
 	int						cooldown;//general cooldown
 	int						cooldownDash;
+	int						cooldownAttack;
 	int						healthTickCount;// cooldown for health damage
 	int 					health;
 	GFC_Circle				sensor;//This can be used for things like checking proximity to player or other functions
 	int						ttl; //Time to live for projectiles- attack can be just a 1 pixel dist projectile
+	int						type; //variations insame thig like player and weapon
 	//CONTACTS AT MOMENT
 
 

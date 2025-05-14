@@ -7,6 +7,7 @@
 #include "gfc_vector.h"
 #include "gf2d_sprite.h"
 #include "gfc_audio.h"
+#include "SDL_mixer.h"
 
 #include "gfc_string.h"
 #include "entity.h"
@@ -55,23 +56,39 @@ int main(int argc, char * argv[])
     walker_new_pos(4 * 64, 4 * 64);//Hard code for something later and world draw testing
 
 
+    gfc_audio_init(32, 8, 1, 1, true, false);
+    Mix_VolumeMusic(32);
+
     //Feature Debug Flags
     int drawFlag = 0;
 
 
+    Mix_Music *music;
+    music = Mix_LoadMUS("audio/platform-shoes-8-bit-chiptune-instrumental-336417.mp3");
+    Mix_PlayMusic(music, -1);
+    //slog(music);
+    //slog(Mix_PlayMusic(music, -1));
+
+    //I dont know why this works gfc_sound_init is private
+    //gfc_sound_init(99);
+    //music = gfc_sound_load("audio/platform-shoes-8-bit-chiptune-instrumental-336417.mp3", 1, -1);
+    //slog(SDL_GetError());
+
+    //gfc_sound_play(music, 99, 10, -1, -1);
     //flag end 
 
     /*demo setup*/
    // sprite = gf2d_sprite_load_image("images/backgrounds/test.png");
+
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
     
     //player = player_new_pos(384,384);
-    World* mainmenu = world_load("maps/menu.map");
+    activeworld = world_load("maps/menu.map");
     //Hardcode Test
     //Entity* walk = walker_new_pos(128, 128);
     //Entity* fly = flyer_new();
     //GFC_Rect rect = gfc_rect(0,100,100,5);
-    world_setup_camera(activeworld);
+    //world_setup_camera(activeworld);
 
     
     for (int i = 0; i < argc; i++)
@@ -91,7 +108,7 @@ int main(int argc, char * argv[])
     //MAIN MENU ATTEMPTS
     while (!done)
     {
-        gfc_audio_init(10, 10, 1, 1, 1, 1);
+        
         gfc_input_update();
         //SDL_PumpEvents();   // update SDL's internal event structures
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
@@ -138,13 +155,20 @@ int main(int argc, char * argv[])
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
 
-    world_free(mainmenu);
-    world_load("maps/world.map");
+    world_free(activeworld);
+    activeworld = world_load("maps/world.map");
     done = 0;//ready for loop two
-
+    //Mix_HaltMusic();
     /*main game loop*/
     while(!done)
     {
+       
+        if (activeworld->music != NULL) {
+            Mix_PlayMusic(activeworld->music, -1);
+            //slog("Music should be playing");
+        }
+       
+        //gfc_sound_play(music, 99, 10, -1, -1);
         gfc_input_update();
         //SDL_PumpEvents();   // update SDL's internal event structures
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame

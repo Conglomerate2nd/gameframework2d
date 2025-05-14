@@ -1,3 +1,4 @@
+#include "SDL_mixer.h"
 #include "simple_logger.h"
 #include "simple_json.h"
 #include "gf2d_graphics.h"
@@ -90,7 +91,7 @@ World* world_load(const char* filename)
 	SJson* json = NULL;
 	SJson* worldJson = NULL;
 	SJson* verticalArray, * horizontalArray;
-	GFC_Sound* music;
+	//Mix_Music* music;
 	//SJson* music;
 	Uint32 width = 0, height = 0;
 	int i, j;
@@ -120,14 +121,7 @@ World* world_load(const char* filename)
 		return NULL;
 	}
 
-	//MUSIC
-	if (sj_object_get_value(worldJson, "music") != NULL) 
-	{
-		
-		slog(sj_object_get_value_as_string(worldJson, "music"));
-		music = gfc_sound_load_music(sj_object_get_value_as_string(worldJson, "music"));
-		gfc_sound_play(music, 99, 10, -1, -1);
-	}
+	
 
 	//Loading arrays in tle map as vertial arrays and horizontal arrays
 	verticalArray = sj_object_get_value(worldJson, "tileMap");
@@ -179,7 +173,7 @@ World* world_load(const char* filename)
 			}
 			if (world->tileMap[i + (j * width)] == 17 && entity_player_get()!=NULL) {
 				entity_player_get()->position.x = i * 64;
-				entity_player_get()->position.x = j * 64;
+				entity_player_get()->position.y = j * 64;
 			}
 
 
@@ -230,6 +224,22 @@ World* world_load(const char* filename)
 		1
 	);
 	world_tile_layer_build(world);
+
+	//MUSIC
+	if (sj_object_get_value(worldJson, "music") != NULL)
+	{
+		slog(sj_object_get_value_as_string(worldJson, "music"));
+		world->music = Mix_LoadMUS(sj_object_get_value_as_string(worldJson, "music"));
+		if (!world->music) {
+			slog("null PTR MUSIC");
+		}
+		slog("%i", Mix_PlayMusic(world->music, -1));
+		slog(world->music);
+		//music = gfc_sound_load(sj_object_get_value_as_string(worldJson, "music"),1,-1);
+		//slog(SDL_GetError());
+		//gfc_sound_play(music, 99, 10, -1, -1);
+		//slog(SDL_GetError());
+	}
 
 	slog("assigning to activeworld");
 	activeworld = world;

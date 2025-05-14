@@ -4,6 +4,7 @@
 #include "gf2d_sprite.h"
 #include "gfc_shape.h"
 #include "entity.h"
+#include "SDL_mixer.h"
 
 typedef struct
 {
@@ -16,6 +17,7 @@ typedef struct
 	Uint32		worldHeight;//height of world
 	Uint32		worldWidth;//width of world
 	GFC_Rect 	*bounds;
+	Mix_Music	*music;
 }World;
 
 /**

@@ -200,35 +200,8 @@ void playerThink(Entity* self)
 		//self->position.x += 15;
 	}
 
-	/*
-	if (gfc_input_command_down("right") && gfc_input_command_down("dash") && HollowTileCheckRight(get_tile_right(self->position.x, self->position.y)) != 1) {
-		if ((HollowTileCheckRight(get_tile_right(self->position.x + 128, self->position.y)) != 1) && (HollowTileCheckRight(get_tile_right(self->position.x + 64, self->position.y)) != 1)) {
-			self->position.x += 120;
-		}
-		else if (HollowTileCheckRight(get_tile_right(self->position.x + 64, self->position.y)) != 1) {
-			self->position.x += 64;
-
-		}
-		//else self->position.x += 64;
-
-		//self->position.x += 15;
-	}*/
-
-	//DASH
-	/*
-	if (gfc_input_command_down("left") && HollowTileCheckLeft(get_tile_left(self->position.x + 60, self->position.y)) != 1) {
-		self->velocity.x = -3;
-		//self->position.x -= 15;
-	}
-	else if (gfc_input_command_down("right") && HollowTileCheckRight(get_tile_right(self->position.x, self->position.y)) != 1) {
-		self->velocity.x = 3;
-		//self->position.x += 15;
-	}
-	else self->velocity.x = 0;
-	*/
-
 	if (gfc_input_command_down("jump")) {
-		gfc_sound_play(sfx, 0, 1, -1, -1);
+		gfc_sound_play(sfx, 0, .5, -1, -1);
 		//slog("%f velocity y", self->velocity.y);
 		//self->position.y += -15*self->directionY;
 		if (get_tile_above(self->position.x, self->position.y + 62) == 0)
@@ -239,10 +212,33 @@ void playerThink(Entity* self)
 	}
 	else self->velocity.y = self->velocity.y;
 	
-	
-	if (gfc_input_command_down("attack")) {
+
+	//Attack and Special Attacks; Basic has to be on bottom
+
+	if (gfc_input_command_down("attack") && gfc_input_command_down("dash") && self->cooldownAttack == 0) {
+		//Hollow Knight Dash
+		attack_new_pos1(self->position.x, self->position.y, 4, self->directionX);
+		self->cooldownAttack = 50;
+	}
+	if (gfc_input_command_down("attack") && gfc_input_command_down("down") && gfc_input_command_down("up") && self->cooldownAttack == 0) {
+		//MegaMan Leaf Barrier
+		attack_new_pos1(self->position.x, self->position.y, 2, self->directionX);
+		self->cooldownAttack = 50;
+	}
+	if (gfc_input_command_down("attack") && gfc_input_command_down("up") && self->cooldownAttack == 0) {
+		//Lob Shot
+		attack_new_pos1(self->position.x, self->position.y, 1, self->directionX);
+		self->cooldownAttack = 50;
+	}
+	if (gfc_input_command_down("attack") && gfc_input_command_down("down") && self->cooldownAttack == 0) {
+		//Mine
+		attack_new_pos1(self->position.x, self->position.y, 3, self->directionX);
+		self->cooldownAttack = 50;
+	}
+	if (gfc_input_command_down("attack") && self->cooldownAttack==0) {
 		//attack_new_pos(self->position.x + (self->directionX * 5), self->position.y,1,1100,self->directionX);
-		attack_new_pos1(self->position.x,self->position.y, 1);
+		attack_new_pos1(self->position.x,self->position.y, 0,self->directionX);
+		self->cooldownAttack = 50;
 	}
 
 	playerPhysicsCalc(self);
@@ -260,7 +256,11 @@ void playerThink(Entity* self)
 	if (self->cooldownDash > 0) {
 		self->cooldownDash--;
 	}
+	if (self->cooldownAttack > 0) {
+		self->cooldownAttack--;
+	}
 }
+
 void playerUpdate(Entity* self)
 {
 	if (self->health == 0) {

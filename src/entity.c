@@ -264,8 +264,7 @@ void entity_system_collision()
 			{
 				//slog("colliding");
 				//THIS WORKS
-				//TODO FIGURE OUT HOW TO USE THIS TO RUN FUNCTIONS WITHIN AN ENTITY
-				if ((get_team_type(&_entManager.entityList[i]) == ETT_player) || (get_team_type(&_entManager.entityList[j]) == ETT_player))
+				if (((get_team_type(&_entManager.entityList[i]) == ETT_player) && (get_team_type(&_entManager.entityList[j]) == ETT_enemy)) || ((get_team_type(&_entManager.entityList[j]) == ETT_player)&& (get_team_type(&_entManager.entityList[i]) == ETT_enemy)))
 				{
 					//slog("player hit");
 					damageSelf(entity_player_get());
