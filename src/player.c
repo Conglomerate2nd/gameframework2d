@@ -333,6 +333,7 @@ void playerUpdate(Entity* self)
 void playerFree(Entity* self)
 {
 	if (!self)return;
+	//gfc_sound_free(music);
 	entity_free(self);
 	
 }

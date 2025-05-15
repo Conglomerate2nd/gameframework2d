@@ -8,6 +8,7 @@
 #include "gf2d_sprite.h"
 #include "gfc_audio.h"
 #include "SDL_mixer.h"
+#include "gfc_text.h"
 
 #include "gfc_string.h"
 #include "entity.h"
@@ -54,7 +55,7 @@ int main(int argc, char * argv[])
     player_new_pos(2 * 64, 4 * 64);//Hard code for something later and world draw testing
     //attack_new_pos1(4 * 64, 4 * 64,1);//Hard code for something later and world draw testing
     walker_new_pos(4 * 64, 4 * 64);//Hard code for something later and world draw testing
-
+    GFC_Vector2D mousePoint;
 
     gfc_audio_init(32, 8, 1, 1, true, false);
     Mix_VolumeMusic(32);
@@ -90,7 +91,12 @@ int main(int argc, char * argv[])
     //GFC_Rect rect = gfc_rect(0,100,100,5);
     //world_setup_camera(activeworld);
 
-    
+    GFC_Rect buttonStart;
+    buttonStart.x = 450;
+    buttonStart.y = 275;
+    buttonStart.w = 300;
+    buttonStart.h = 150;
+
     for (int i = 0; i < argc; i++)
     {
         slog(argv[i]);
@@ -106,6 +112,7 @@ int main(int argc, char * argv[])
    // gf2d_sprite_load_image("images/backgrounds/test-export2.png");
 
     //MAIN MENU ATTEMPTS
+    sprite = gf2d_sprite_load_image("images/backgrounds/test-export2.png");
     while (!done)
     {
         
@@ -117,8 +124,14 @@ int main(int argc, char * argv[])
         mf += 0.1;
         if (mf >= 16.0)mf = 0;
 
-        
         gf2d_graphics_clear_screen();// clears drawing buffers
+        // all drawing should happen betweem clear_screen and next_frame
+            //backgrounds drawn first
+        gf2d_sprite_draw_image(sprite, gfc_vector2d(0, 0));
+        
+        mousePoint.x = mx;
+        mousePoint.y = my;
+        
         
         // all drawing should happen betweem clear_screen and next_frame
             //backgrounds drawn first
@@ -127,6 +140,13 @@ int main(int argc, char * argv[])
 
         //Between Background and UI
         
+        if (gfc_point_in_rect(mousePoint, buttonStart)) 
+        {
+            gf2d_draw_rect_filled(buttonStart, GFC_COLOR_YELLOW);
+            if (SDL_MOUSEBUTTONDOWN) {
+                done = 1;
+            }
+        }else gf2d_draw_rect_filled(buttonStart, GFC_COLOR_GREY);
 
         //UI elements last
         gf2d_sprite_draw(
@@ -138,6 +158,8 @@ int main(int argc, char * argv[])
             NULL,
             &mouseGFC_Color,
             (int)mf);
+
+
 
        //if (drawFlag == 1) { HighlightTile(mx, my, activeworld); }
         
@@ -163,6 +185,7 @@ int main(int argc, char * argv[])
     slog(music);
     while(!done)
     {
+       
         //Mix_PlayMusic(music, -1);
         //slog("music address is ", music);
         //slog(Mix_PlayMusic(music, -1));
@@ -205,16 +228,7 @@ int main(int argc, char * argv[])
             entity_system_draw();
 
             //UI elements last
-            gf2d_sprite_draw(
-                mouse,
-                gfc_vector2d(mx,my),
-                NULL,
-                NULL,
-                NULL,
-                NULL,
-                &mouseGFC_Color,
-                (int)mf);
-            
+           
             if(entity_player_get())
             {
                 if (entity_player_get()->health <= 0) {
@@ -226,9 +240,22 @@ int main(int argc, char * argv[])
                 }
             }
 
-            //still no
-            if (drawFlag == 1) { HighlightTile(mx, my, activeworld); }
+            
+            if (drawFlag == 1) {
+                gf2d_sprite_draw(
+                    mouse,
+                    gfc_vector2d(mx, my),
+                    NULL,
+                    NULL,
+                    NULL,
+                    NULL,
+                    &mouseGFC_Color,
+                    (int)mf);
+
+                HighlightTile(mx, my, activeworld); 
+            }
           
+            
             
         gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
         
@@ -253,6 +280,6 @@ int main(int argc, char * argv[])
 
 void mainMenu()
 {
-
+   
 }
 /*eol@eof*/
