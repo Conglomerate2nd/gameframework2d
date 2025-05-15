@@ -240,7 +240,7 @@ World* world_load(const char* filename)
 		//gfc_sound_play(music, 99, 10, -1, -1);
 		//slog(SDL_GetError());
 	}
-
+	world->tileToDraw = 1;
 	slog("assigning to activeworld");
 	activeworld = world;
 
@@ -1112,6 +1112,26 @@ void HighlightTile(float mx, float my, World *world)
 			return;
 		}
 		*/
+		if(world->tileSwitchCooldown == 0)
+		{
+			if (keys[SDL_SCANCODE_J]) {
+				if (world->tileToDraw == 1) {
+					world->tileToDraw = 10;
+				}
+				else world->tileToDraw--;
+				slog("Brush is %i", world->tileToDraw);
+				world->tileSwitchCooldown = 30;
+			}
+			if (keys[SDL_SCANCODE_K]) {
+				if (world->tileToDraw == 10) {
+					world->tileToDraw = 1;
+				}
+				else world->tileToDraw++;
+				slog("Brush is %i", world->tileToDraw);
+				world->tileSwitchCooldown = 30;
+			}
+		}
+
 		for (j = 0; j < activeworld->tileHeight; j++)
 		{
 			for (i = 0; i < activeworld->tileWidth; i++)
@@ -1124,7 +1144,7 @@ void HighlightTile(float mx, float my, World *world)
 				{
 					gf2d_draw_rect(bounds, GFC_COLOR_GREEN);
 					if (keys[SDL_SCANCODE_R]) {
-						DrawTile(i * 64 + offset.x, j * 64 + offset.y, activeworld, index);
+						DrawTile(i * 64 + offset.x, j * 64 + offset.y, activeworld, index, world->tileToDraw);
 					}
 					if (keys[SDL_SCANCODE_E]) {
 						EraseTile(i * 64 + offset.x, j * 64 + offset.y, activeworld, index);
@@ -1136,11 +1156,11 @@ void HighlightTile(float mx, float my, World *world)
 				*/
 			}
 		}
-
+		if (world->tileSwitchCooldown != 0)world->tileSwitchCooldown--;
 
 }
 
-void DrawTile(float mx, float my, World* world,int index)
+void DrawTile(float mx, float my, World* world,int index, int tile)
 {
 	//int MouseX = (int)mx % 64;
 	//int MouseY = (int)my % 64;
@@ -1179,8 +1199,11 @@ void DrawTile(float mx, float my, World* world,int index)
 	*/
 	//index = i + (j * world->tileWidth);//converts position on tilemap into position in array
 	//if (world->tileMap[index] == 0) continue;//skip this cause its empty
+	
+	if (tile > 10) {
+		world->tileMap[index] = tile%10+13;
+	}else world->tileMap[index] = tile;
 
-	world->tileMap[index] = 1;
 	//frame = world->tileMap[index] - 1;
 	
 	gf2d_sprite_free(world->tileLayer);

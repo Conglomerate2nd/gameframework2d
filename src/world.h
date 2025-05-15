@@ -18,6 +18,8 @@ typedef struct
 	Uint32		worldWidth;//width of world
 	GFC_Rect 	*bounds;
 	Mix_Music	*music;
+	int			tileToDraw;
+	int			tileSwitchCooldown;
 }World;
 
 /**
@@ -148,7 +150,7 @@ int HollowTileCheckDown(int i);
 
 void HighlightTile(float x, float y, World *world);
 //Only calledby highligh tile
-void DrawTile(float mx, float my, World* world, int tile);
+void DrawTile(float mx, float my, World* world,int index, int tile);
 
 void EraseTile(float mx, float my, World* world, int index);
 #endif

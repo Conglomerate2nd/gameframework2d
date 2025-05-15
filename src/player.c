@@ -241,6 +241,19 @@ void playerThink(Entity* self)
 		self->cooldownAttack = 50;
 	}
 
+	//SpeedUP&SUPERJUMP
+	if (keys[SDL_SCANCODE_X]) {
+		self->velocity.x *= 2;
+		self->isRunState = 1;
+	}else self->isRunState = 0;
+
+	if (gfc_input_command_down("up") && self->isRunState == 1) {
+		self->position.y -= 30;
+		self->isRunState == 0;
+		self->velocity.x =0;
+	}
+
+
 	playerPhysicsCalc(self);
 
 	gfc_vector2d_normalize(&dir);

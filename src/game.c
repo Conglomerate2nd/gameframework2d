@@ -247,4 +247,9 @@ int main(int argc, char * argv[])
     slog("---==== END ====---");
     return 0;
 }
+
+void mainMenu()
+{
+
+}
 /*eol@eof*/
