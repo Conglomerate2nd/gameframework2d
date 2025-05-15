@@ -160,11 +160,14 @@ int main(int argc, char * argv[])
     done = 0;//ready for loop two
     //Mix_HaltMusic();
     /*main game loop*/
+    slog(music);
     while(!done)
     {
-       
+        //Mix_PlayMusic(music, -1);
+        //slog("music address is ", music);
+        //slog(Mix_PlayMusic(music, -1));
         if (activeworld->music != NULL) {
-            Mix_PlayMusic(activeworld->music, -1);
+            //Mix_PlayMusic(activeworld->music, -1);
             //slog("Music should be playing");
         }
        

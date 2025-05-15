@@ -58,6 +58,7 @@ typedef struct Entity_S {
 	int						ttl; //Time to live for projectiles- attack can be just a 1 pixel dist projectile
 	int						type; //variations insame thig like player and weapon
 	int						isRunState;
+	int						musicPlay;//PLayer olays music only way I got it to work
 	//CONTACTS AT MOMENT
 
 

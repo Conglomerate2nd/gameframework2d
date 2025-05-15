@@ -129,11 +129,11 @@ void playerThink(Entity* self)
 	self->bounds = gfc_rect(self->position.x, self->position.y, 64, 64);
 	//slog("in player");
 	world_tile_collide_active_entity(activeworld, self);
-
-	GFC_Sound* sfx = gfc_sound_load("audio/cartoon-jump-6462.wav", .5, 0);
-
 	gfc_input_update();
 
+
+	GFC_Sound* sfx = gfc_sound_load("audio/cartoon-jump-6462.wav", .5, 1);
+	
 
 	/*OLD AND BUGGY WITH NO CHECKS*/
 	/*
@@ -282,6 +282,16 @@ void playerUpdate(Entity* self)
 
 	}
 
+	//GFC_Sound* music = Mix_LoadMUS("audio/platform-shoes-8-bit-chiptune-instrumental-336417.wav");
+
+	Mix_Music* music = gfc_sound_load("audio/platform-shoes-8-bit-chiptune-instrumental-336417.wav", .5, 0);
+	//Mix_PlayMusic(music, -1);
+	//slog("music address is ", music);
+	//slog(Mix_PlayMusic(music, -1));
+	if (self->musicPlay != 1) {
+		gfc_sound_play(music, 99, .5, -1, -1);
+		self->musicPlay = 1;
+	}
 	/*
 	if (self->directionX == -1) {
 
