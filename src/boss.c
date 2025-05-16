@@ -98,7 +98,7 @@ Entity* boss_new_pos(int x, int y)
 	self->center.y = self->position.y + 32;
 	self->sensor = gfc_circle(self->center.x, self->center.y, 200);
 	target = entity_player_get();
-	self->health = 5;
+	self->health = 3;
 	return self;
 }
 
@@ -144,7 +144,7 @@ void bossUpdate(Entity* self)
 
 	if (self->health == 0) {
 		slog("dead");
-		walkerFree(self);
+		bossFree(self);
 
 	}
 

@@ -243,7 +243,7 @@ void playerThink(Entity* self)
 
 	//SpeedUP&SUPERJUMP
 	if (keys[SDL_SCANCODE_X]) {
-		self->velocity.x *= 2;
+		self->velocity.x *= 3;
 		self->isRunState = 1;
 	}else self->isRunState = 0;
 

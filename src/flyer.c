@@ -109,7 +109,7 @@ void flyerUpdate(Entity* self)
 {
 	if (self->health == 0) {
 		slog("dead");
-		walkerFree(self);
+		flyerFree(self);
 
 	}
 }
