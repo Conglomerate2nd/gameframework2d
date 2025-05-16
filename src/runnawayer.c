@@ -137,7 +137,11 @@ void runnawayerThink(Entity* self)
 void runnawayerUpdate(Entity* self)
 {
 
+	if (self->health == 0) {
+		slog("dead");
+		walkerFree(self);
 
+	}
 
 	//slog("runnawayer THINK DONE");
 

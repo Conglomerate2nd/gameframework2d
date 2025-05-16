@@ -142,7 +142,11 @@ void bossThink(Entity* self)
 void bossUpdate(Entity* self)
 {
 
+	if (self->health == 0) {
+		slog("dead");
+		walkerFree(self);
 
+	}
 
 	//slog("boss THINK DONE");
 

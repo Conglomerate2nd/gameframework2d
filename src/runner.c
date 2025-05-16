@@ -137,7 +137,11 @@ void runnerThink(Entity* self)
 }
 void runnerUpdate(Entity* self)
 {
-	
+	if (self->health == 0) {
+		slog("dead");
+		walkerFree(self);
+
+	}
 	
 	
 	//slog("RUNNER THINK DONE");

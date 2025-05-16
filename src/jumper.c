@@ -112,7 +112,11 @@ void jumperThink(Entity* self)
 }
 void jumperUpdate(Entity* self)
 {
+	if (self->health == 0) {
+		slog("dead");
+		walkerFree(self);
 
+	}
 }
 void jumperFree(Entity* self)
 {
