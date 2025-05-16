@@ -98,6 +98,8 @@ Entity* runner_new_pos(int x, int y)
 	self->center.y = self->position.y + 32;
 	self->sensor = gfc_circle(self->center.x, self->center.y, 200);
 	target = entity_player_get();
+
+	self->health = 1;
 	return self;
 }
 

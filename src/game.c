@@ -148,6 +148,8 @@ int main(int argc, char * argv[])
             }
         }else gf2d_draw_rect_filled(buttonStart, GFC_COLOR_GREY);
 
+        
+
         //UI elements last
         gf2d_sprite_draw(
             mouse,

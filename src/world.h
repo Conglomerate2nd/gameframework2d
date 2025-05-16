@@ -123,6 +123,7 @@ void tile_7(int i, int j, World* world, Entity* self);
 void tile_8(int i, int j, World* world, Entity* self);
 void tile_9(int i, int j, World* world, Entity* self);
 void tile_10(int i, int j, World* world, Entity* self);
+void door(int i, int j, World* world, Entity* self);
 
 //void tile_3test(int i, int j, World* world, Entity* self);
 
@@ -153,4 +154,6 @@ void HighlightTile(float x, float y, World *world);
 void DrawTile(float mx, float my, World* world,int index, int tile);
 
 void EraseTile(float mx, float my, World* world, int index);
+
+void world_save();
 #endif

@@ -225,25 +225,11 @@ World* world_load(const char* filename)
 	);
 	world_tile_layer_build(world);
 
-	//MUSIC
-	if (sj_object_get_value(worldJson, "music") != NULL)
-	{
-		slog(sj_object_get_value_as_string(worldJson, "music"));
-		world->music = Mix_LoadMUS(sj_object_get_value_as_string(worldJson, "music"));
-		if (!world->music) {
-			slog("null PTR MUSIC");
-		}
-		slog("%i", Mix_PlayMusic(world->music, -1));
-		slog(world->music);
-		//music = gfc_sound_load(sj_object_get_value_as_string(worldJson, "music"),1,-1);
-		//slog(SDL_GetError());
-		//gfc_sound_play(music, 99, 10, -1, -1);
-		//slog(SDL_GetError());
-	}
 	world->tileToDraw = 1;
 	slog("assigning to activeworld");
 	activeworld = world;
-
+	world->worldHeight = height;
+	world->worldWidth = width;
 	slog("assigned");
 	sj_free(json);
 	return world;
@@ -540,6 +526,7 @@ void world_tile_collide_active_entity(World* world, Entity* self)
 					case 8:tile_8(i, j, world, self); break;
 					case 9:tile_9(i, j, world, self); break;
 					case 10:tile_10(i, j, world, self); break;
+					case 99:door(i, j, world, self); break;
 					default:break;
 				}
 			}
@@ -1157,7 +1144,9 @@ void HighlightTile(float mx, float my, World *world)
 			}
 		}
 		if (world->tileSwitchCooldown != 0)world->tileSwitchCooldown--;
-
+		if (keys[SDL_SCANCODE_S]) {
+			world_save();
+		}
 }
 
 void DrawTile(float mx, float my, World* world,int index, int tile)
@@ -1261,3 +1250,82 @@ void EraseTile(float mx, float my, World* world, int index)
 	//world_draw_active(activeworld);
 }
 
+void world_save()
+{
+	SJson* world = sj_object_new();
+	SJson* saveWorld = sj_object_new();
+	//Uint8 temptileMapWidth = gfc_allocate_array(sizeof(Uint8), activeworld->worldWidth);
+	//Uint8 temptileMapHeight = gfc_allocate_array(sizeof(gfc_allocate_array(sizeof(Uint8), activeworld->worldWidth)),activeworld->worldHeight);//[worldHeight][worldWidth];
+	slog("before map array");
+	
+
+	if (sj_string_new_text("images/backgrounds/bg_flat.png", 0)!=NULL) {
+		slog("background success");
+		sj_object_insert(saveWorld, "background", sj_string_new_text("images/backgrounds/bg_flat.png", 0));
+		slog("background success after");
+	}else slog("background failed");
+
+
+	if (sj_string_new_text("images/tileSet1.png", 0) != NULL) {
+		slog("tileset success");
+		sj_object_insert(saveWorld, "tileSet", sj_string_new_text("images/tileSet1.png", 0));
+		slog("tileset success after");
+	}else slog("tileset failed");
+
+	if (sj_string_new_text("audio/platform-shoes-8-bit-chiptune-instrumental-336417.mp3", 0) != NULL) {
+		slog("music success");
+		sj_object_insert(saveWorld, "music", sj_string_new_text("audio/platform-shoes-8-bit-chiptune-instrumental-336417.mp3", 0));
+		slog("music success after");
+	}else slog("music failed");
+
+	if (sj_new_int(64) != NULL) {
+		slog("frame_w success");
+		sj_object_insert(saveWorld, "frame_w", sj_new_int(64));
+		slog("frame_w success after");
+	}else slog("frame_w failed");
+
+	if (sj_new_int(64) != NULL) {
+		slog("frame_h success");
+		sj_object_insert(saveWorld, "frame_h", sj_new_int(64));
+		slog("frame_h success after");
+	}else slog("frame_h failed");
+
+	if ( sj_new_int(1) != NULL) {
+		slog("frames_per_line success");
+		sj_object_insert(saveWorld, "frames_per_line", sj_new_int(1));
+		slog("frames_per_line success after");
+	}else slog("frames_per_line failed");
+	slog("after inserts");
+	//Tilemap save
+	/*
+	for (int i = 0; i < activeworld->worldHeight; i++) {
+		for (int j = 0; j < activeworld->worldWidth; j++) {
+			//append tile 0
+			temptileMapWidth[j] = activeworld->tileMap[i + j * activeworld->worldWidth];
+		}
+		temptileMapHeight[i] = temptileMapWidth;
+	}
+	slog("after map making");
+	sj_object_insert(saveWorld, "tileMap", sj_array_new(temptileMapHeight));
+	*/
+	
+	sj_object_insert(world, "world", saveWorld);
+	sj_save(world, "worldsave.map");
+	slog("saved world");
+}
+
+void door(int i, int j, World* world, Entity* self)
+{
+	/*
+	World* temp = world_load("maps/world2.map");
+	GFC_Rect doorBox;
+	doorBox.x = i * 64;
+	doorBox.y= j * 64;
+	doorBox.h = 64;
+	doorBox.w = 64;
+	//gf2d_draw_rect_filled(doorBox, GFC_COLOR_BLACK);
+	world_free(activeworld);
+	activeworld = temp;
+	world_free(temp);*/
+	activeworld = world_load("maps/world2.map");
+}

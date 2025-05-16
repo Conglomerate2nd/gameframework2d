@@ -93,6 +93,7 @@ Entity* jumper_new_pos(int x, int y)
 	self->team = ETT_enemy;
 	self->cooldown = 0;
 	self->directionX = 1;//walke foward first
+	self->health = 1;
 	return self;
 }
 

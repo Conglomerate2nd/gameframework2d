@@ -93,6 +93,7 @@ Entity* flyer_new_pos(int x,int y)
 	self->isFlying = 1;
 	self->directionX = 1;
 	self->directionY = -1;
+	self->health = 1;
 
 	return self;
 }
