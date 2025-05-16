@@ -199,7 +199,7 @@ void attack3(Entity* self)
 void attack4(Entity* self)
 {
 	//farther shot - hollow knight dash attack
-	self->position.x += 100;
+	self->position.x += 100 * self->directionX;
 }
 void attack5(Entity* self) 
 {
